@@ -1,4 +1,3 @@
-local Body = require "Body"
 local common = require "common"
 local Entity = require "Entity"
 local physics = require "physics"
