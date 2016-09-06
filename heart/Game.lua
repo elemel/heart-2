@@ -1,7 +1,7 @@
 local Body = require "Body"
 local common = require "common"
 local Entity = require "Entity"
-local PhysicsSystem = require "PhysicsSystem"
+local physics = require "physics"
 local Transform = require "Transform"
 local TransformSystem = require "TransformSystem"
 local World = require "World"
@@ -54,7 +54,7 @@ function Game:loadSystem(config)
   if config.name == "transform" then
     self:addSystem(TransformSystem.new(config))
   elseif config.name == "physics" then
-    self:addSystem(PhysicsSystem.new({config}))
+    self:addSystem(physics.newPhysicsSystem({config}))
   end
 end
 

@@ -48,4 +48,6 @@ function PhysicsSystem:loadBody(entity, config)
   entity:addComponent(body)
 end
 
-return PhysicsSystem
+return {
+  newPhysicsSystem = PhysicsSystem.new,
+}
