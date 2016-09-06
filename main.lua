@@ -22,7 +22,6 @@ function love.load()
     entities = {
       {
         name = "car",
-        components = {},
 
         children = {
           {
@@ -33,14 +32,12 @@ function love.load()
 
               {
                 name = "body",
-              }
+              },
             },
-
-            children = {},
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   })
 end
 

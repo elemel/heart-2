@@ -37,7 +37,8 @@ function PhysicsSystem:update(dt)
   self.world:update(dt)
 
   for body, _ in pairs(self.bodies) do
-    body:update(dt)
+    body.transform:setPosition(body.body:getPosition())
+    body.transform:setAngle(body.body:getAngle())
   end
 end
 

@@ -31,13 +31,21 @@ function Transform:destroy()
 end
 
 function Transform:start()
+  self:bindParent()
 end
 
 function Transform:stop()
+  self.parent = nil
 end
 
-function Transform:normalize()
-  if self.dirty then
+function Transform:isDirty()
+  return self.dirty
+end
+
+function Transform:setDirty(dirty)
+  if dirty then
+    self.dirty = true
+  elseif self.dirty then
     self.localMatrix:reset()
     self.localMatrix:translate(self.x, self.y)
     self.localMatrix:rotate(self.angle)
@@ -56,18 +64,36 @@ function Transform:normalize()
   end
 end
 
-function Transform:getParent()
-  local entity = self.entity and self.entity.parent
+function Transform:bindParent()
+  local parentEntity = self.entity and self.entity.parent
 
   while entity ~= nil do
     if entity.transform then
-      return entity.transform
+      self.parent = entity.transform
+      break
     end
 
     entity = entity.parent
   end
+end
 
-  return nil
+function Transform:getPosition()
+  return self.x, self.y
+end
+
+function Transform:setPosition(x, y)
+  self.x = x
+  self.y = y
+  self.dirty = true
+end
+
+function Transform:getAngle()
+  return self.angle
+end
+
+function Transform:setAngle(angle)
+  self.angle = angle
+  self.dirty = true
 end
 
 return Transform
