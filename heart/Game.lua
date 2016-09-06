@@ -5,7 +5,6 @@ heart.transform = require "transform"
 
 local common = require "common"
 local Entity = require "Entity"
-local World = require "World"
 
 local Game = {}
 Game.__index = Game
