@@ -1,9 +1,36 @@
 local Matrix = require "Matrix"
 
+local transform = {}
+
+local TransformSystem = {}
+TransformSystem.__index = TransformSystem
+
+function transform.newTransformSystem(config)
+  local system = setmetatable({}, TransformSystem)
+  system.name = "transform"
+  system.config = config
+  return system
+end
+
+function TransformSystem:destroy()
+  if self.game then
+    self.game:removeSystem(self)
+  end
+end
+
+function TransformSystem:start()
+end
+
+function TransformSystem:stop()
+end
+
+function TransformSystem:update(dt)
+end
+
 local Transform = {}
 Transform.__index = Transform
 
-function Transform.new(data)
+function transform.newTransform(data)
   local transform = setmetatable({}, Transform)
   transform.name = "transform"
 
@@ -96,4 +123,4 @@ function Transform:setAngle(angle)
   self.dirty = true
 end
 
-return Transform
+return transform

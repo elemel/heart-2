@@ -1,8 +1,10 @@
+local heart = {}
+
+heart.physics = require "physics"
+heart.transform = require "transform"
+
 local common = require "common"
 local Entity = require "Entity"
-local physics = require "physics"
-local Transform = require "Transform"
-local TransformSystem = require "TransformSystem"
 local World = require "World"
 
 local Game = {}
@@ -51,9 +53,9 @@ end
 
 function Game:loadSystem(config)
   if config.name == "transform" then
-    self:addSystem(TransformSystem.new(config))
+    self:addSystem(heart.transform.newTransformSystem(config))
   elseif config.name == "physics" then
-    self:addSystem(physics.newPhysicsSystem({config}))
+    self:addSystem(heart.physics.newPhysicsSystem({config}))
   end
 end
 
@@ -99,7 +101,7 @@ function Game:loadComponent(entity, config)
 end
 
 function Game:loadTransform(entity, config)
-  local transform = Transform.new(config)
+  local transform = heart.transform.newTransform(config)
   entity:addComponent(transform)
 end
 
