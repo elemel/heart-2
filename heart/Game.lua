@@ -1,10 +1,11 @@
 local heart = {}
 
-heart.physics = require "physics"
-heart.transform = require "transform"
+heart.graphics = require "heart.graphics"
+heart.physics = require "heart.physics"
+heart.transform = require "heart.transform"
 
-local common = require "common"
-local Entity = require "Entity"
+local common = require "heart.common"
+local Entity = require "heart.Entity"
 
 local Game = {}
 Game.__index = Game
@@ -23,13 +24,9 @@ end
 function Game:addSystem(system)
   table.insert(self.systems, system)
   self.systems[system.name] = system
-  system.game = self
-  system:start()
 end
 
 function Game:removeSystem(system)
-  system:stop()
-  system.game = nil
   self.systems[system.name] = nil
   common.removeArrayValue(self.systems, system)
 end
@@ -51,10 +48,12 @@ function Game:loadSystems(config)
 end
 
 function Game:loadSystem(config)
-  if config.name == "transform" then
-    self:addSystem(heart.transform.newTransformSystem(config))
+  if config.name == "graphics" then
+    heart.graphics.newGraphicsSystem(game, config)
   elseif config.name == "physics" then
-    self:addSystem(heart.physics.newPhysicsSystem({config}))
+    heart.physics.newPhysicsSystem(game, config)
+  elseif config.name == "transform" then
+    heart.transform.newTransformSystem(game, config)
   end
 end
 
@@ -91,22 +90,19 @@ end
 
 function Game:loadComponent(entity, config)
   if config.name == "body" then
-    self.systems.physics:loadBody(entity, config)
+    local system = assert(self.systems.physics)
+    heart.physics.newBody(system, entity, config)
+  elseif config.name == "sprite" then
+    local system = assert(self.systems.graphics)
+    heart.graphics.newSprite(system, entity, config)
   elseif config.name == "transform" then
     self:loadTransform(entity, config)
-  elseif config.name == "world" then
-    self:loadWorld(entity, config)
   end
 end
 
 function Game:loadTransform(entity, config)
   local transform = heart.transform.newTransform(config)
   entity:addComponent(transform)
-end
-
-function Game:loadWorld(entity, config)
-  local world = World.new(config)
-  entity:addComponent(world)
 end
 
 function Game:update(dt)
@@ -117,49 +113,14 @@ end
 
 function Game:draw()
   local width, height = love.graphics:getDimensions()
-  local scale = 0.5 * height
+  local scale = (1 / 4) * 0.5 * height
 
   love.graphics.translate(0.5 * width, 0.5 * height)
-  love.graphics.scale(scale)
+  love.graphics.scale(scale, -scale)
   love.graphics.setLineWidth(1 / scale)
-  love.graphics.circle("line", 0, 0, 1, 256)
 
-  if self.root then
-    drawEntity(self.root)
-  end
-end
-
-function drawEntity(entity)
-  local transform = entity.components.transform
-  local sprite = entity.components.sprite
-
-  if sprite then
-    if transform then
-      love.graphics.draw(sprite,
-        transform.x, transform.y,
-        transform.angle,
-        transform.scaleX, transform.scaleY)
-    else
-      love.graphics.draw(sprite)
-    end
-  end
-
-  if entity.children[1] then
-    if transform then
-      love.graphics.push()
-
-      love.graphics.translate(transform.x, transform.y)
-      love.graphics.rotate(transform.angle)
-      love.graphics.scale(transform.scaleX, transform.scaleY)
-    end
-
-    for i, child in ipairs(entity.children) do
-      drawEntity(child)
-    end
-
-    if transform then
-      love.graphics.pop()
-    end
+  for i, system in ipairs(self.systems) do
+    system:draw()
   end
 end
 

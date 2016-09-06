@@ -1,4 +1,4 @@
-local Game = require "Game"
+local Game = require "heart.Game"
 
 function love.load()
   love.window.setMode(800, 600, {
@@ -17,6 +17,10 @@ function love.load()
       {
         name = "physics",
       },
+
+      {
+        name = "graphics",
+      },
     },
 
     entities = {
@@ -28,10 +32,16 @@ function love.load()
             components = {
               {
                 name = "transform",
+                x = -2,
               },
 
               {
                 name = "body",
+              },
+
+              {
+                name = "sprite",
+                image = "wheel.png",
               },
             },
           },

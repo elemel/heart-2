@@ -1,4 +1,4 @@
-local common = require "common"
+local common = require "heart.common"
 
 local Entity = {}
 Entity.__index = Entity
@@ -31,13 +31,9 @@ end
 function Entity:addComponent(component)
   table.insert(self.components, component)
   self.components[component.name] = component
-  component.entity = self
-  component:start()
 end
 
 function Entity:removeComponent(component)
-  component:stop()
-  component.entity = nil
   self.components[component.name] = nil
   common.removeArrayValue(self.components, component)
 end
