@@ -58,7 +58,7 @@ function physics.newBody(system, entity, config)
 
   local world = assert(body.system.world)
   local x, y = body.transform:getPosition()
-  body.body = love.physics.newBody(world, x, y, "dynamic")
+  body.body = love.physics.newBody(world, x, y, config.type)
   body.body:setUserData(body)
 
   return body
@@ -75,6 +75,34 @@ function Body:destroy()
 
   self.system.bodies[self] = nil
   self.system = nil
+end
+
+local CircleFixture = {}
+CircleFixture.__index = CircleFixture
+
+function physics.newCircleFixture(system, entity, config)
+  local fixture = setmetatable({}, CircleFixture)
+
+  fixture.name = "CircleFixture"
+
+  fixture.entity = assert(entity)
+  fixture.entity:addComponent(fixture)
+
+  local body = assert(fixture.entity:getAncestorComponent("body"))
+  local radius = config.radius or 1
+  local shape = love.physics.newCircleShape(radius)
+  fixture.fixture = love.physics.newFixture(body.body, shape)
+  fixture.fixture:setUserData(fixture)
+
+  return fixture
+end
+
+function CircleFixture:destroy()
+  self.fixture:destroy()
+  self.fixture = nil
+
+  self.entity.removeComponent(self)
+  self.entity = nil
 end
 
 return physics

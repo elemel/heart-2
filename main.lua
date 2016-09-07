@@ -25,18 +25,78 @@ function love.load()
 
     entities = {
       {
+        name = "ground",
+
+        components = {
+          {
+            name = "transform",
+          },
+
+          {
+            name = "body",
+          },
+
+          {
+            name = "circleFixture",
+            radius = 2,
+          },
+
+          {
+            name = "sprite",
+            image = "wheel.png",
+          },
+        },
+      },
+
+      {
         name = "car",
 
         children = {
           {
+            name = "frontWheel",
+
             components = {
               {
                 name = "transform",
-                x = -2,
+                x = 1,
+                y = 4,
               },
 
               {
                 name = "body",
+                type = "dynamic",
+              },
+
+              {
+                name = "circleFixture",
+                radius = 0.5,
+              },
+
+              {
+                name = "sprite",
+                image = "wheel.png",
+              },
+            },
+          },
+
+          {
+            name = "rearWheel",
+
+            components = {
+              {
+                name = "transform",
+                x = -1,
+                y = 4,
+              },
+
+              {
+                name = "body",
+                type = "dynamic",
+              },
+
+              {
+                name = "circleFixture",
+                radius = 0.5,
               },
 
               {

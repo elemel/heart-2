@@ -51,6 +51,7 @@ function graphics.newSprite(system, entity, config)
 
   sprite.transform = assert(sprite.entity:getComponent("transform"))
   sprite.image = love.graphics.newImage(config.image)
+  sprite.image:setFilter("nearest", "nearest")
 
   return sprite
 end

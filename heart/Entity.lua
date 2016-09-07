@@ -46,7 +46,7 @@ function Entity:getAncestorComponent(name)
   local current = self
 
   repeat
-    local component = current.components.name
+    local component = current.components[name]
 
     if component then
       return component

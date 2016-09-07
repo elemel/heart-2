@@ -92,6 +92,9 @@ function Game:loadComponent(entity, config)
   if config.name == "body" then
     local system = assert(self.systems.physics)
     heart.physics.newBody(system, entity, config)
+  elseif config.name == "circleFixture" then
+    local system = assert(self.systems.physics)
+    heart.physics.newCircleFixture(system, entity, config)
   elseif config.name == "sprite" then
     local system = assert(self.systems.graphics)
     heart.graphics.newSprite(system, entity, config)
