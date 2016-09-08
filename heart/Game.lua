@@ -1,11 +1,9 @@
-local heart = {}
+local animation = require("heart.animation")
+local common = require("heart.common")
+local graphics = require("heart.graphics")
+local physics = require("heart.physics")
 
-heart.graphics = require "heart.graphics"
-heart.physics = require "heart.physics"
-heart.transform = require "heart.transform"
-
-local common = require "heart.common"
-local Entity = require "heart.Entity"
+local Entity = require("heart.Entity")
 
 local Game = {}
 Game.__index = Game
@@ -23,11 +21,11 @@ end
 
 function Game:addSystem(system)
   table.insert(self.systems, system)
-  self.systems[system.name] = system
+  self.systems[system:getSystemType()] = system
 end
 
 function Game:removeSystem(system)
-  self.systems[system.name] = nil
+  self.systems[system:getSystemType()] = nil
   common.removeArrayValue(self.systems, system)
 end
 
@@ -48,12 +46,12 @@ function Game:loadSystems(config)
 end
 
 function Game:loadSystem(config)
-  if config.name == "graphics" then
-    heart.graphics.newGraphicsSystem(game, config)
-  elseif config.name == "physics" then
-    heart.physics.newPhysicsSystem(game, config)
-  elseif config.name == "transform" then
-    heart.transform.newTransformSystem(game, config)
+  if config.type == "animation" then
+    animation.newAnimationSystem(game, config)
+  elseif config.type == "graphics" then
+    graphics.newGraphicsSystem(game, config)
+  elseif config.type == "physics" then
+    physics.newPhysicsSystem(game, config)
   end
 end
 
@@ -89,23 +87,25 @@ function Game:loadComponents(entity, config)
 end
 
 function Game:loadComponent(entity, config)
-  if config.name == "body" then
+  if config.type == "body" then
     local system = assert(self.systems.physics)
-    heart.physics.newBody(system, entity, config)
-  elseif config.name == "circleFixture" then
+    physics.newBodyComponent(system, entity, config)
+  elseif config.type == "circleFixture" then
     local system = assert(self.systems.physics)
-    heart.physics.newCircleFixture(system, entity, config)
-  elseif config.name == "sprite" then
+    physics.newCircleFixtureComponent(system, entity, config)
+  elseif config.type == "rectangleFixture" then
+    local system = assert(self.systems.physics)
+    physics.newRectangleFixtureComponent(system, entity, config)
+  elseif config.type == "revoluteJoint" then
+    local system = assert(self.systems.physics)
+    physics.newRevoluteJointComponent(system, entity, config)
+  elseif config.type == "sprite" then
     local system = assert(self.systems.graphics)
-    heart.graphics.newSprite(system, entity, config)
-  elseif config.name == "transform" then
-    self:loadTransform(entity, config)
+    graphics.newSpriteComponent(system, entity, config)
+  elseif config.type == "transform" then
+    local system = assert(self.systems.animation)
+    animation.newTransformComponent(system, entity, config)
   end
-end
-
-function Game:loadTransform(entity, config)
-  local transform = heart.transform.newTransform(config)
-  entity:addComponent(transform)
 end
 
 function Game:update(dt)

@@ -1,25 +1,28 @@
-local Game = require "heart.Game"
+local heart = require("heart")
 
 function love.load()
   love.window.setMode(800, 600, {
     fullscreentype = "desktop",
     resizable = true,
+    highdpi = true,
   })
 
-  game = Game.new()
+  love.physics.setMeter(1)
+
+  game = heart.newGame()
 
   game:load({
     systems = {
       {
-        name = "transform",
+        type = "animation",
       },
 
       {
-        name = "physics",
+        type = "physics",
       },
 
       {
-        name = "graphics",
+        type = "graphics",
       },
     },
 
@@ -29,21 +32,17 @@ function love.load()
 
         components = {
           {
-            name = "transform",
+            type = "transform",
           },
 
           {
-            name = "body",
+            type = "body",
           },
 
           {
-            name = "circleFixture",
-            radius = 2,
-          },
-
-          {
-            name = "sprite",
-            image = "wheel.png",
+            type = "rectangleFixture",
+            width = 10,
+            angle = 0.1,
           },
         },
       },
@@ -51,29 +50,57 @@ function love.load()
       {
         name = "car",
 
+        components = {
+          {
+            type = "transform",
+            x = 0,
+            y = 4,
+          },
+
+          {
+            type = "body",
+            bodyType = "dynamic",
+          },
+
+          {
+            type = "rectangleFixture",
+            width = 2,
+            height = 0.5,
+          },
+
+          {
+            type = "sprite",
+            image = "hull.png",
+          },
+        },
+
         children = {
           {
             name = "frontWheel",
 
             components = {
               {
-                name = "transform",
+                type = "transform",
                 x = 1,
                 y = 4,
               },
 
               {
-                name = "body",
-                type = "dynamic",
+                type = "body",
+                bodyType = "dynamic",
               },
 
               {
-                name = "circleFixture",
+                type = "circleFixture",
                 radius = 0.5,
               },
 
               {
-                name = "sprite",
+                type = "revoluteJoint",
+              },
+
+              {
+                type = "sprite",
                 image = "wheel.png",
               },
             },
@@ -84,23 +111,27 @@ function love.load()
 
             components = {
               {
-                name = "transform",
+                type = "transform",
                 x = -1,
                 y = 4,
               },
 
               {
-                name = "body",
-                type = "dynamic",
+                type = "body",
+                bodyType = "dynamic",
               },
 
               {
-                name = "circleFixture",
+                type = "circleFixture",
                 radius = 0.5,
               },
 
               {
-                name = "sprite",
+                type = "revoluteJoint",
+              },
+
+              {
+                type = "sprite",
                 image = "wheel.png",
               },
             },

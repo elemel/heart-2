@@ -21,9 +21,9 @@ function common.removeValue(t, value)
 end
 
 function common.findArrayValue(t, value)
-  for key, other in ipairs(t) do
+  for index, other in ipairs(t) do
     if other == value then
-      return key
+      return index
     end
   end
 
@@ -31,13 +31,13 @@ function common.findArrayValue(t, value)
 end
 
 function common.removeArrayValue(t, value)
-  local key = common.findArrayValue(t, value)
+  local index = common.findArrayValue(t, value)
 
-  if key ~= nil then
-    t[key] = nil
+  if index ~= nil then
+    table.remove(t, index)
   end
 
-  return key
+  return index
 end
 
 return common

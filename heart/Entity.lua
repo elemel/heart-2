@@ -1,4 +1,4 @@
-local common = require "heart.common"
+local common = require("heart.common")
 
 local Entity = {}
 Entity.__index = Entity
@@ -30,23 +30,23 @@ end
 
 function Entity:addComponent(component)
   table.insert(self.components, component)
-  self.components[component.name] = component
+  self.components[component:getComponentType()] = component
 end
 
 function Entity:removeComponent(component)
-  self.components[component.name] = nil
+  self.components[component:getComponentType()] = nil
   common.removeArrayValue(self.components, component)
 end
 
-function Entity:getComponent(name)
-  return self.components[name]
+function Entity:getComponent(type)
+  return self.components[type]
 end
 
-function Entity:getAncestorComponent(name)
+function Entity:getAncestorComponent(type)
   local current = self
 
   repeat
-    local component = current.components[name]
+    local component = current.components[type]
 
     if component then
       return component
@@ -54,6 +54,28 @@ function Entity:getAncestorComponent(name)
 
     current = current.parent
   until not current
+end
+
+function Entity:getConfig()
+  local config = {}
+
+  if self.components[1] then
+    config.components = {}
+
+    for i, component in ipairs(self.components) do
+      table.insert(config.components, component:getConfig())
+    end
+  end
+
+  if self.children[1] then
+    config.children = {}
+
+    for i, child in ipairs(self.children) do
+      table.insert(config.children, child:getConfig())
+    end
+  end
+
+  return config
 end
 
 return Entity
