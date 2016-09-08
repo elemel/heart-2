@@ -46,11 +46,11 @@ function Game:loadSystems(config)
 end
 
 function Game:loadSystem(config)
-  if config.type == "animation" then
+  if config.systemType == "animation" then
     animation.newAnimationSystem(game, config)
-  elseif config.type == "graphics" then
+  elseif config.systemType == "graphics" then
     graphics.newGraphicsSystem(game, config)
-  elseif config.type == "physics" then
+  elseif config.systemType == "physics" then
     physics.newPhysicsSystem(game, config)
   end
 end
@@ -64,6 +64,7 @@ end
 function Game:loadEntity(config, parent)
   local entity = Entity.new()
   entity.game = self
+  table.insert(self.entities, entity)
 
   if parent then
     entity:setParent(parent)
@@ -87,25 +88,47 @@ function Game:loadComponents(entity, config)
 end
 
 function Game:loadComponent(entity, config)
-  if config.type == "body" then
+  if config.componentType == "body" then
     local system = assert(self.systems.physics)
     physics.newBodyComponent(system, entity, config)
-  elseif config.type == "circleFixture" then
+  elseif config.componentType == "circleFixture" then
     local system = assert(self.systems.physics)
     physics.newCircleFixtureComponent(system, entity, config)
-  elseif config.type == "rectangleFixture" then
+  elseif config.componentType == "rectangleFixture" then
     local system = assert(self.systems.physics)
     physics.newRectangleFixtureComponent(system, entity, config)
-  elseif config.type == "revoluteJoint" then
+  elseif config.componentType == "revoluteJoint" then
     local system = assert(self.systems.physics)
     physics.newRevoluteJointComponent(system, entity, config)
-  elseif config.type == "sprite" then
+  elseif config.componentType == "sprite" then
     local system = assert(self.systems.graphics)
     graphics.newSpriteComponent(system, entity, config)
-  elseif config.type == "transform" then
+  elseif config.componentType == "transform" then
     local system = assert(self.systems.animation)
     animation.newTransformComponent(system, entity, config)
   end
+end
+
+function Game:getConfig()
+  local config = {}
+
+  if self.systems[1] then
+    config.systems = {}
+
+    for i, system in ipairs(self.systems) do
+      table.insert(config.systems, system:getConfig())
+    end
+  end
+
+  if self.entities[1] then
+    config.entities = {}
+
+    for i, entity in ipairs(self.entities) do
+      table.insert(config.entities, entity:getConfig())
+    end
+  end
+
+  return config
 end
 
 function Game:update(dt)

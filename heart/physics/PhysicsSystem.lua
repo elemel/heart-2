@@ -30,6 +30,12 @@ function PhysicsSystem:getSystemType()
   return "physics"
 end
 
+function PhysicsSystem:getConfig()
+  return {
+    systemType = "physics",
+  }
+end
+
 function PhysicsSystem:update(dt)
   self.world:update(dt)
 

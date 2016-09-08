@@ -21,7 +21,7 @@ end
 
 function AnimationSystem:getConfig()
   return {
-    type = "animation",
+    systemType = "animation",
   }
 end
 

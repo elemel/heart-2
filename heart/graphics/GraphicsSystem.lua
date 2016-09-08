@@ -23,7 +23,7 @@ end
 
 function GraphicsSystem:getConfig()
   return {
-    type = "graphics",
+    systemType = "graphics",
   }
 end
 

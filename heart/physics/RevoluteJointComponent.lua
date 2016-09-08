@@ -32,7 +32,7 @@ end
 
 function RevoluteJointComponent:getConfig()
   return {
-    type = "revoluteJoint",
+    componentType = "revoluteJoint",
   }
 end
 

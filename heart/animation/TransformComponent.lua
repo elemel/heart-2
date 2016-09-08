@@ -35,7 +35,7 @@ end
 
 function TransformComponent:getConfig()
   return {
-    type = "transform",
+    componentType = "transform",
 
     x = self.x,
     y = self.y,

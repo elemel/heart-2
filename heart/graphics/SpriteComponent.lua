@@ -33,7 +33,7 @@ end
 
 function SpriteComponent:getConfig()
   return {
-    type = "sprite",
+    componentType = "sprite",
   }
 end
 

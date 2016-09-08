@@ -33,7 +33,7 @@ end
 
 function CircleFixtureComponent:getConfig()
   return {
-    type = "circleFixture",
+    componentType = "circleFixture",
   }
 end
 

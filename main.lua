@@ -1,4 +1,5 @@
 local heart = require("heart")
+local jsua = require("jsua")
 
 function love.load()
   love.window.setMode(800, 600, {
@@ -14,15 +15,15 @@ function love.load()
   game:load({
     systems = {
       {
-        type = "animation",
+        systemType = "animation",
       },
 
       {
-        type = "physics",
+        systemType = "physics",
       },
 
       {
-        type = "graphics",
+        systemType = "graphics",
       },
     },
 
@@ -32,15 +33,15 @@ function love.load()
 
         components = {
           {
-            type = "transform",
+            componentType = "transform",
           },
 
           {
-            type = "body",
+            componentType = "body",
           },
 
           {
-            type = "rectangleFixture",
+            componentType = "rectangleFixture",
             width = 10,
             angle = 0.1,
           },
@@ -52,24 +53,24 @@ function love.load()
 
         components = {
           {
-            type = "transform",
+            componentType = "transform",
             x = 0,
             y = 4,
           },
 
           {
-            type = "body",
+            componentType = "body",
             bodyType = "dynamic",
           },
 
           {
-            type = "rectangleFixture",
+            componentType = "rectangleFixture",
             width = 2,
             height = 0.5,
           },
 
           {
-            type = "sprite",
+            componentType = "sprite",
             image = "hull.png",
           },
         },
@@ -80,27 +81,27 @@ function love.load()
 
             components = {
               {
-                type = "transform",
+                componentType = "transform",
                 x = 1,
                 y = 4,
               },
 
               {
-                type = "body",
+                componentType = "body",
                 bodyType = "dynamic",
               },
 
               {
-                type = "circleFixture",
+                componentType = "circleFixture",
                 radius = 0.5,
               },
 
               {
-                type = "revoluteJoint",
+                componentType = "revoluteJoint",
               },
 
               {
-                type = "sprite",
+                componentType = "sprite",
                 image = "wheel.png",
               },
             },
@@ -111,27 +112,27 @@ function love.load()
 
             components = {
               {
-                type = "transform",
+                componentType = "transform",
                 x = -1,
                 y = 4,
               },
 
               {
-                type = "body",
+                componentType = "body",
                 bodyType = "dynamic",
               },
 
               {
-                type = "circleFixture",
+                componentType = "circleFixture",
                 radius = 0.5,
               },
 
               {
-                type = "revoluteJoint",
+                componentType = "revoluteJoint",
               },
 
               {
-                type = "sprite",
+                componentType = "sprite",
                 image = "wheel.png",
               },
             },
@@ -140,6 +141,8 @@ function love.load()
       },
     },
   })
+
+  print(jsua.write(game:getConfig()))
 end
 
 function love.update(dt)

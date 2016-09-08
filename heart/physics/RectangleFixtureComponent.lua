@@ -33,7 +33,7 @@ end
 
 function RectangleFixtureComponent:getConfig()
   return {
-    type = "rectangleFixture",
+    componentType = "rectangleFixture",
   }
 end
 

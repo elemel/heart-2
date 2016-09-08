@@ -39,7 +39,7 @@ end
 
 function BodyComponent:getConfig()
   return {
-    type = "body",
+    componentType = "body",
   }
 end
 
