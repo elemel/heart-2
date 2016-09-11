@@ -1,7 +1,7 @@
 local AnimationSystem = require("heart.animation.AnimationSystem")
-local TransformComponent = require("heart.animation.TransformComponent")
+local BoneComponent = require("heart.animation.BoneComponent")
 
 return {
   newAnimationSystem = AnimationSystem.new,
-  newTransformComponent = TransformComponent.new,
+  newBoneComponent = BoneComponent.new,
 }

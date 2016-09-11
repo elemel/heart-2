@@ -32,13 +32,16 @@ end
 
 function GraphicsSystem:draw()
   for component, _ in pairs(self.spriteComponents) do
-    local transformComponent = assert(component.transformComponent)
-    local x, y = transformComponent:getPosition()
-    local angle = transformComponent:getAngle()
+    local boneComponent = assert(component.boneComponent)
+    local x, y = boneComponent:getWorldPosition()
+    local angle = boneComponent:getWorldAngle()
     local scale = 1 / 16
     local width, height = component.image:getDimensions()
     love.graphics.draw(component.image, x, y, angle, scale, -scale, 0.5 * width, 0.5 * height)
   end
+end
+
+function GraphicsSystem:debugDraw()
 end
 
 return GraphicsSystem

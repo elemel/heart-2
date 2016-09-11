@@ -31,4 +31,7 @@ end
 function AnimationSystem:draw()
 end
 
+function AnimationSystem:debugDraw()
+end
+
 return AnimationSystem

@@ -15,11 +15,15 @@ function love.load()
   game:load({
     systems = {
       {
-        systemType = "animation",
+        systemType = "scripting",
       },
 
       {
         systemType = "physics",
+      },
+
+      {
+        systemType = "animation",
       },
 
       {
@@ -33,7 +37,7 @@ function love.load()
 
         components = {
           {
-            componentType = "transform",
+            componentType = "bone",
           },
 
           {
@@ -53,9 +57,12 @@ function love.load()
 
         components = {
           {
-            componentType = "transform",
-            x = 0,
-            y = 4,
+            componentType = "bone",
+
+            position = {
+              x = 0,
+              y = 4,
+            },
           },
 
           {
@@ -73,6 +80,10 @@ function love.load()
             componentType = "sprite",
             image = "hull.png",
           },
+
+          {
+            componentType = "script",
+          },
         },
 
         children = {
@@ -81,9 +92,12 @@ function love.load()
 
             components = {
               {
-                componentType = "transform",
-                x = 1,
-                y = 4,
+                componentType = "bone",
+
+                position = {
+                  x = 1,
+                  y = 0,
+                },
               },
 
               {
@@ -112,9 +126,12 @@ function love.load()
 
             components = {
               {
-                componentType = "transform",
-                x = -1,
-                y = 4,
+                componentType = "bone",
+
+                position = {
+                  x = -1,
+                  y = 0,
+                },
               },
 
               {
@@ -142,7 +159,7 @@ function love.load()
     },
   })
 
-  print(jsua.write(game:getConfig()))
+  -- print(jsua.write(game:getConfig()))
 end
 
 function love.update(dt)

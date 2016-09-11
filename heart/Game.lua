@@ -2,6 +2,7 @@ local animation = require("heart.animation")
 local common = require("heart.common")
 local graphics = require("heart.graphics")
 local physics = require("heart.physics")
+local scripting = require("heart.scripting")
 
 local Entity = require("heart.Entity")
 
@@ -52,6 +53,8 @@ function Game:loadSystem(config)
     graphics.newGraphicsSystem(game, config)
   elseif config.systemType == "physics" then
     physics.newPhysicsSystem(game, config)
+  elseif config.systemType == "scripting" then
+    scripting.newScriptingSystem(game, config)
   end
 end
 
@@ -78,6 +81,12 @@ function Game:loadEntity(config, parent)
     self:loadEntities(config.children, entity)
   end
 
+  for i, component in ipairs(entity.components) do
+    if component.bind then
+      component:bind()
+    end
+  end
+
   return entity
 end
 
@@ -91,6 +100,9 @@ function Game:loadComponent(entity, config)
   if config.componentType == "body" then
     local system = assert(self.systems.physics)
     physics.newBodyComponent(system, entity, config)
+  elseif config.componentType == "bone" then
+    local system = assert(self.systems.animation)
+    animation.newBoneComponent(system, entity, config)
   elseif config.componentType == "circleFixture" then
     local system = assert(self.systems.physics)
     physics.newCircleFixtureComponent(system, entity, config)
@@ -100,12 +112,12 @@ function Game:loadComponent(entity, config)
   elseif config.componentType == "revoluteJoint" then
     local system = assert(self.systems.physics)
     physics.newRevoluteJointComponent(system, entity, config)
+  elseif config.componentType == "script" then
+    local system = assert(self.systems.scripting)
+    scripting.newScriptComponent(system, entity, config)
   elseif config.componentType == "sprite" then
     local system = assert(self.systems.graphics)
     graphics.newSpriteComponent(system, entity, config)
-  elseif config.componentType == "transform" then
-    local system = assert(self.systems.animation)
-    animation.newTransformComponent(system, entity, config)
   end
 end
 
@@ -147,6 +159,10 @@ function Game:draw()
 
   for i, system in ipairs(self.systems) do
     system:draw()
+  end
+
+  for i, system in ipairs(self.systems) do
+    system:debugDraw()
   end
 end
 

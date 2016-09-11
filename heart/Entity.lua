@@ -56,6 +56,20 @@ function Entity:getAncestorComponent(type)
   until not current
 end
 
+function Entity:getDescendantComponents(type, result)
+  result = result or {}
+
+  if self.components[type] then
+    table.insert(result, self.components[type])
+  end
+
+  for i, child in ipairs(self.children) do
+    child:getDescendantComponents(type, result)
+  end
+
+  return result
+end
+
 function Entity:getConfig()
   local config = {}
 

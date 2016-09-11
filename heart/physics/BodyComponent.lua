@@ -10,11 +10,14 @@ function BodyComponent.new(system, entity, config)
   component.entity = assert(entity)
   component.entity:addComponent(component)
 
-  component.transformComponent = assert(component.entity:getComponent("transform"))
+  component.boneComponent = assert(component.entity:getComponent("bone"))
 
   local world = assert(component.system.world)
-  local x, y = component.transformComponent:getPosition()
+  local x, y = component.boneComponent:getWorldPosition()
+  local angle = component.boneComponent:getWorldAngle()
+
   component.body = love.physics.newBody(world, x, y, config.bodyType)
+  component.body:setAngle(angle)
   component.body:setUserData(component)
 
   return component
@@ -24,7 +27,7 @@ function BodyComponent:destroy()
   self.body:destroy()
   self.body = nil
 
-  self.transformComponent = nil
+  self.boneComponent = nil
 
   self.entity:removeComponent(self)
   self.entity = nil

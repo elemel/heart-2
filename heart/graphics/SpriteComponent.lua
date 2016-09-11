@@ -10,7 +10,7 @@ function SpriteComponent.new(system, entity, config)
   component.entity = assert(entity)
   component.entity:addComponent(component)
 
-  component.transformComponent = assert(component.entity:getComponent("transform"))
+  component.boneComponent = assert(component.entity:getComponent("bone"))
   component.image = love.graphics.newImage(config.image)
   component.image:setFilter("nearest", "nearest")
 
@@ -18,7 +18,7 @@ function SpriteComponent.new(system, entity, config)
 end
 
 function SpriteComponent:destroy()
-  self.transformComponent = nil
+  self.boneComponent = nil
 
   self.entity:removeComponent(self)
   self.entity = nil
