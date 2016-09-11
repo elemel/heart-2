@@ -10,9 +10,7 @@ function love.load()
 
   love.physics.setMeter(1)
 
-  game = heart.newGame()
-
-  game:load({
+  game = heart.newGame({
     systems = {
       {
         systemType = "scripting",

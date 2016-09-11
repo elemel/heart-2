@@ -3,11 +3,57 @@ local common = require("heart.common")
 local Entity = {}
 Entity.__index = Entity
 
-function Entity.new()
+function Entity.new(game, parent, config)
   local entity = setmetatable({}, Entity)
-  entity.components = {}
-  entity.children = {}
+  entity:init(game, parent, config)
   return entity
+end
+
+function Entity:init(game, parent, config)
+  self.components = {}
+  self.children = {}
+
+  self.game = assert(game)
+  game:addEntity(self)
+
+  self:setParent(parent)
+
+  if config.components then
+    for i, componentConfig in ipairs(config.components) do
+      self.game:loadComponent(self, componentConfig)
+    end
+  end
+
+  if config.children then
+    for i, childConfig in ipairs(config.children) do
+      Entity.new(self.game, self, childConfig)
+    end
+  end
+
+  for i, component in ipairs(self.components) do
+    if component.bind then
+      component:bind()
+    end
+  end
+end
+
+function Entity:destroy()
+  if self.children then
+    for i = #self.children, 1, -1 do
+      self.children[i]:destroy()
+    end
+  end
+
+  if self.components then
+    for i = #self.components, 1, -1 do
+      self.components[i]:destroy()
+    end
+  end
+
+  if self.game then
+    self.game:removeEntity(self)
+    self.game = nil
+  end
 end
 
 function Entity:getParent()

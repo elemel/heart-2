@@ -9,15 +9,27 @@ local Entity = require("heart.Entity")
 local Game = {}
 Game.__index = Game
 
-function Game.new()
+function Game.new(config)
   local game = setmetatable({}, Game)
-  game:init()
+  game:init(config)
   return game
 end
 
-function Game:init()
+function Game:init(config)
   self.systems = {}
   self.entities = {}
+
+  if config.systems then
+    for i, systemConfig in ipairs(config.systems) do
+      self:loadSystem(systemConfig)
+    end
+  end
+
+  if config.entities then
+    for i, entityConfig in ipairs(config.entities) do
+      Entity.new(self, nil, entityConfig)
+    end
+  end
 end
 
 function Game:addSystem(system)
@@ -30,69 +42,23 @@ function Game:removeSystem(system)
   common.removeArrayValue(self.systems, system)
 end
 
-function Game:load(config)
-  if config.systems then
-    self:loadSystems(config.systems)
-  end
-
-  if config.entities then
-    self:loadEntities(config.entities)
-  end
+function Game:addEntity(entity)
+  table.insert(self.entities, entity)
 end
 
-function Game:loadSystems(config)
-  for i, systemConfig in ipairs(config) do
-    self:loadSystem(systemConfig)
-  end
+function Game:removeEntity(entity)
+  common.removeArrayValue(self.entities, entity)
 end
 
 function Game:loadSystem(config)
   if config.systemType == "animation" then
-    animation.newAnimationSystem(game, config)
+    animation.newAnimationSystem(self, config)
   elseif config.systemType == "graphics" then
-    graphics.newGraphicsSystem(game, config)
+    graphics.newGraphicsSystem(self, config)
   elseif config.systemType == "physics" then
-    physics.newPhysicsSystem(game, config)
+    physics.newPhysicsSystem(self, config)
   elseif config.systemType == "scripting" then
-    scripting.newScriptingSystem(game, config)
-  end
-end
-
-function Game:loadEntities(config, parent)
-  for i, entityConfig in ipairs(config) do
-    self:loadEntity(entityConfig, parent)
-  end
-end
-
-function Game:loadEntity(config, parent)
-  local entity = Entity.new()
-  entity.game = self
-  table.insert(self.entities, entity)
-
-  if parent then
-    entity:setParent(parent)
-  end
-
-  if config.components then
-    self:loadComponents(entity, config.components)
-  end
-
-  if config.children then
-    self:loadEntities(config.children, entity)
-  end
-
-  for i, component in ipairs(entity.components) do
-    if component.bind then
-      component:bind()
-    end
-  end
-
-  return entity
-end
-
-function Game:loadComponents(entity, config)
-  for i, componentConfig in ipairs(config) do
-    self:loadComponent(entity, componentConfig)
+    scripting.newScriptingSystem(self, config)
   end
 end
 
@@ -136,7 +102,9 @@ function Game:getConfig()
     config.entities = {}
 
     for i, entity in ipairs(self.entities) do
-      table.insert(config.entities, entity:getConfig())
+      if not entity.parent then
+        table.insert(config.entities, entity:getConfig())
+      end
     end
   end
 
