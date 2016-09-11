@@ -29,7 +29,7 @@ function ScriptComponent:init(system, entity, config)
 
   self.script = {}
   setmetatable(self.script, mt)
-  local scriptFunc = assert(loadfile("carScript.lua", "t", self.script))
+  local scriptFunc = assert(loadfile("resources/carScript.lua", "t", self.script))
   scriptFunc()
 end
 

@@ -78,7 +78,7 @@ function love.load()
 
           {
             componentType = "sprite",
-            image = "hull.png",
+            image = "resources/hull.png",
           },
 
           {
@@ -116,7 +116,7 @@ function love.load()
 
               {
                 componentType = "sprite",
-                image = "wheel.png",
+                image = "resources/wheel.png",
               },
             },
           },
@@ -150,7 +150,7 @@ function love.load()
 
               {
                 componentType = "sprite",
-                image = "wheel.png",
+                image = "resources/wheel.png",
               },
             },
           },
