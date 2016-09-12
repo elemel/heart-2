@@ -41,12 +41,6 @@ function ScriptComponent:destroy()
   self.system = nil
 end
 
-function ScriptComponent:bind()
-  if self.script.bind then
-    self.script:bind()
-  end
-end
-
 function ScriptComponent:getComponentType()
   return "script"
 end

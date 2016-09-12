@@ -3,37 +3,45 @@ BodyComponent.__index = BodyComponent
 
 function BodyComponent.new(system, entity, config)
   local component = setmetatable({}, BodyComponent)
-
-  component.system = assert(system)
-  component.system.bodyComponents[component] = true
-
-  component.entity = assert(entity)
-  component.entity:addComponent(component)
-
-  component.boneComponent = assert(component.entity:getComponent("bone"))
-
-  local world = assert(component.system.world)
-  local x, y = component.boneComponent:getWorldPosition()
-  local angle = component.boneComponent:getWorldAngle()
-
-  component.body = love.physics.newBody(world, x, y, config.bodyType)
-  component.body:setAngle(angle)
-  component.body:setUserData(component)
-
+  component:init(system, entity, config)
   return component
 end
 
+function BodyComponent:init(system, entity, config)
+  self.system = assert(system)
+  self.system.bodyComponents[self] = true
+
+  self.entity = assert(entity)
+  self.entity:addComponent(self)
+
+  self.boneComponent = assert(self.entity:getComponent("bone"))
+
+  local world = assert(self.system.world)
+  local x, y = self.boneComponent:getWorldPosition()
+  local angle = self.boneComponent:getWorldAngle()
+
+  self.body = love.physics.newBody(world, x, y, config.bodyType)
+  self.body:setAngle(angle)
+  self.body:setUserData(self)
+end
+
 function BodyComponent:destroy()
-  self.body:destroy()
-  self.body = nil
+  if self.body then
+    self.body:destroy()
+    self.body = nil
+  end
 
   self.boneComponent = nil
 
-  self.entity:removeComponent(self)
-  self.entity = nil
+  if self.entity then
+    self.entity:removeComponent(self)
+    self.entity = nil
+  end
 
-  self.system.bodyComponents[self] = nil
-  self.system = nil
+  if self.system then
+    self.system.bodyComponents[self] = nil
+    self.system = nil
+  end
 end
 
 function BodyComponent:getComponentType()

@@ -1,6 +1,7 @@
 local animation = require("heart.animation")
 local common = require("heart.common")
 local graphics = require("heart.graphics")
+local parenting = require("heart.parenting")
 local physics = require("heart.physics")
 local scripting = require("heart.scripting")
 
@@ -27,7 +28,7 @@ function Game:init(config)
 
   if config.entities then
     for i, entityConfig in ipairs(config.entities) do
-      Entity.new(self, nil, entityConfig)
+      Entity.new(self, entityConfig)
     end
   end
 end
@@ -44,10 +45,16 @@ end
 
 function Game:addEntity(entity)
   table.insert(self.entities, entity)
+  self.entities[entity:getUuid()] = entity
 end
 
 function Game:removeEntity(entity)
+  self.entities[entity:getUuid()] = nil
   common.removeArrayValue(self.entities, entity)
+end
+
+function Game:getEntity(key)
+  return self.entities[key]
 end
 
 function Game:loadSystem(config)
@@ -55,6 +62,8 @@ function Game:loadSystem(config)
     animation.newAnimationSystem(self, config)
   elseif config.systemType == "graphics" then
     graphics.newGraphicsSystem(self, config)
+  elseif config.systemType == "parenting" then
+    parenting.newParentingSystem(self, config)
   elseif config.systemType == "physics" then
     physics.newPhysicsSystem(self, config)
   elseif config.systemType == "scripting" then
@@ -72,6 +81,9 @@ function Game:loadComponent(entity, config)
   elseif config.componentType == "circleFixture" then
     local system = assert(self.systems.physics)
     physics.newCircleFixtureComponent(system, entity, config)
+  elseif config.componentType == "parenting" then
+    local system = assert(self.systems.parenting)
+    parenting.newParentingComponent(system, entity, config)
   elseif config.componentType == "rectangleFixture" then
     local system = assert(self.systems.physics)
     physics.newRectangleFixtureComponent(system, entity, config)
@@ -102,9 +114,7 @@ function Game:getConfig()
     config.entities = {}
 
     for i, entity in ipairs(self.entities) do
-      if not entity.parent then
-        table.insert(config.entities, entity:getConfig())
-      end
+      table.insert(config.entities, entity:getConfig())
     end
   end
 

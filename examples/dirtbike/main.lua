@@ -13,6 +13,10 @@ function love.load()
   game = heart.newGame({
     systems = {
       {
+        systemType = "parenting",
+      },
+
+      {
         systemType = "scripting",
       },
 
@@ -51,9 +55,13 @@ function love.load()
       },
 
       {
-        name = "car",
+        uuid = "ed15bf2b-60ff-4eba-86cc-51ad8882346f",
 
         components = {
+          {
+            componentType = "parenting",
+          },
+
           {
             componentType = "bone",
 
@@ -83,81 +91,89 @@ function love.load()
             componentType = "script",
           },
         },
+      },
 
-        children = {
+      {
+        uuid = "bb28a856-8892-4a45-aa5c-2af8a01dda00",
+
+        components = {
           {
-            name = "frontWheel",
+            componentType = "parenting",
+            parentEntityUuid = "ed15bf2b-60ff-4eba-86cc-51ad8882346f",
+          },
 
-            components = {
-              {
-                componentType = "bone",
+          {
+            componentType = "bone",
 
-                position = {
-                  x = 1,
-                  y = 0,
-                },
-              },
-
-              {
-                componentType = "body",
-                bodyType = "dynamic",
-              },
-
-              {
-                componentType = "circleFixture",
-                radius = 0.5,
-              },
-
-              {
-                componentType = "revoluteJoint",
-              },
-
-              {
-                componentType = "sprite",
-                image = "resources/wheel.png",
-              },
+            position = {
+              x = 1,
+              y = 0,
             },
           },
 
           {
-            name = "rearWheel",
+            componentType = "body",
+            bodyType = "dynamic",
+          },
 
-            components = {
-              {
-                componentType = "bone",
+          {
+            componentType = "circleFixture",
+            radius = 0.5,
+          },
 
-                position = {
-                  x = -1,
-                  y = 0,
-                },
-              },
+          {
+            componentType = "revoluteJoint",
+          },
 
-              {
-                componentType = "body",
-                bodyType = "dynamic",
-              },
+          {
+            componentType = "sprite",
+            image = "resources/wheel.png",
+          },
+        },
+      },
 
-              {
-                componentType = "circleFixture",
-                radius = 0.5,
-              },
+      {
+        uuid = "b9d306e1-432f-40f6-9bcf-d606134a3c75",
 
-              {
-                componentType = "revoluteJoint",
-              },
+        components = {
+          {
+            componentType = "parenting",
+            parentEntityUuid = "ed15bf2b-60ff-4eba-86cc-51ad8882346f",
+          },
 
-              {
-                componentType = "sprite",
-                image = "resources/wheel.png",
-              },
+          {
+            componentType = "bone",
+
+            position = {
+              x = -1,
+              y = 0,
             },
+          },
+
+          {
+            componentType = "body",
+            bodyType = "dynamic",
+          },
+
+          {
+            componentType = "circleFixture",
+            radius = 0.5,
+          },
+
+          {
+            componentType = "revoluteJoint",
+          },
+
+          {
+            componentType = "sprite",
+            image = "resources/wheel.png",
           },
         },
       },
     },
   })
 
-  -- print(jsua.write(game:getConfig()))
+  print(jsua.write(game:getConfig()))
 end
 
 function love.update(dt)

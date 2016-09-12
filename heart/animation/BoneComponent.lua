@@ -48,9 +48,18 @@ end
 function BoneComponent:getConfig()
   return {
     componentType = "bone",
-    position = {x = self.x, y = self.y},
+
+    position = {
+      x = self.x,
+      y = self.y,
+    },
+
     angle = self.angle,
-    scale = {x = self.scaleX, y = self.scaleY},
+
+    scale = {
+      x = self.scaleX,
+      y = self.scaleY,
+    },
   }
 end
 
@@ -101,19 +110,9 @@ function BoneComponent:setDirty(dirty)
 end
 
 function BoneComponent:bindParent()
-  local entity = self.entity and self.entity.parent
-
-  while entity ~= nil do
-    local parent = entity:getComponent("bone")
-
-    if parent then
-      self.parent = parent
-      self.dirty = true
-      break
-    end
-
-    entity = entity.parent
-  end
+  local parentingComponent = self.entity:getComponent("parenting")
+  self.parent = parentingComponent and parentingComponent:getParentAncestorComponent("bone")
+  self.dirty = true
 end
 
 function BoneComponent:getPosition()
