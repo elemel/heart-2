@@ -10,6 +10,9 @@ function BoneComponent.new(system, entity, config)
 end
 
 function BoneComponent:init(system, entity, config)
+  self.system = assert(system)
+  self.system.boneComponents[self] = true
+
   self.entity = assert(entity)
   self.entity:addComponent(self)
 
@@ -38,6 +41,11 @@ function BoneComponent:destroy()
   if self.entity then
     self.entity:removeComponent(self)
     self.entity = nil
+  end
+
+  if self.system then
+    self.system.boneComponents[self] = nil
+    self.system = nil
   end
 end
 
