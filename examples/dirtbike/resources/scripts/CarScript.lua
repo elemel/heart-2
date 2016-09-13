@@ -16,7 +16,7 @@ function update(dt)
 
   for i, jointComponent in ipairs(self.revoluteJointComponents) do
     jointComponent.joint:setMotorEnabled(true)
-    jointComponent.joint:setMotorSpeed(-inputX * 5)
+    jointComponent.joint:setMotorSpeed(inputX * 5)
     jointComponent.joint:setMaxMotorTorque(10)
   end
 end

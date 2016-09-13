@@ -25,7 +25,7 @@ function love.load()
 
         gravity = {
           x = 0,
-          y = -10,
+          y = 10,
         },
       },
 
@@ -59,7 +59,7 @@ function love.load()
               height = 1,
             },
 
-            angle = 0.1,
+            angle = -0.1,
           },
         },
       },
@@ -77,7 +77,7 @@ function love.load()
 
             position = {
               x = 0,
-              y = 4,
+              y = -4,
             },
           },
 

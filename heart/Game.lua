@@ -132,7 +132,7 @@ function Game:draw()
   local scale = (1 / 4) * 0.5 * height
 
   love.graphics.translate(0.5 * width, 0.5 * height)
-  love.graphics.scale(scale, -scale)
+  love.graphics.scale(scale, scale)
   love.graphics.setLineWidth(1 / scale)
 
   for i, system in ipairs(self.systems) do
