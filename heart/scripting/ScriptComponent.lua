@@ -14,31 +14,36 @@ function ScriptComponent:init(system, entity, config)
   self.entity = assert(entity)
   self.entity:addComponent(self)
 
-  local mt = {
-    assert = assert,
-    component = self,
-    entity = entity,
-    game = system.game,
-    ipairs = ipairs,
-    love = love,
-    pairs = pairs,
-    print = print
-  }
-
-  mt.__index = mt
+  self.scriptPath = assert(config.scriptPath)
 
   self.script = {}
-  setmetatable(self.script, mt)
-  local scriptFunc = assert(loadfile("resources/carScript.lua", "t", self.script))
+  setmetatable(self.script, self.system.environment)
+
+  self.script.self = self.script
+  self.script.properties = config.properties or {}
+  self.script.component = self
+  self.script.entity = self.entity
+  self.script.game = self.system.game
+
+  local scriptFunc = assert(loadfile(self.scriptPath, "t", self.script))
   scriptFunc()
 end
 
 function ScriptComponent:destroy()
-  self.entity:removeComponent(self)
-  self.entity = nil
+  if self.script then
+    self.script.destroy()
+    self.script = nil
+  end
 
-  self.system:removeScriptComponent(self)
-  self.system = nil
+  if self.entity then
+    self.entity:removeComponent(self)
+    self.entity = nil
+  end
+
+  if self.system then
+    self.system:removeScriptComponent(self)
+    self.system = nil
+  end
 end
 
 function ScriptComponent:getComponentType()
@@ -48,6 +53,8 @@ end
 function ScriptComponent:getConfig()
   return {
     componentType = "script",
+    scriptPath = self.scriptPath,
+    properties = self.script.properties,
   }
 end
 

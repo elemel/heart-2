@@ -5,40 +5,40 @@ BoneComponent.__index = BoneComponent
 
 function BoneComponent.new(system, entity, config)
   local component = setmetatable({}, BoneComponent)
-
-  component.entity = assert(entity)
-  component.entity:addComponent(component)
-
-  component.x = config.position and config.position.x or 0
-  component.y = config.position and config.position.y or 0
-
-  component.angle = config.angle or 0
-
-  component.scaleX = config.scale and config.scale.x or 1
-  component.scaleY = config.scale and config.scale.y or 1
-
-  component.worldX = 0
-  component.worldY = 0
-
-  component.worldAngle = 0
-
-  component.worldScaleX = 1
-  component.worldScaleY = 1
-
-  component.matrix = heartMath.newMatrix()
-  component.worldMatrix = heartMath.newMatrix()
-  component.invWorldMatrix = heartMath.newMatrix()
-
-  component.dirty = true
-
-  component:bindParent()
-
+  component:init(system, entity, config)
   return component
 end
 
+function BoneComponent:init(system, entity, config)
+  self.entity = assert(entity)
+  self.entity:addComponent(self)
+
+  self.x = config.position and config.position.x or 0
+  self.y = config.position and config.position.y or 0
+
+  self.angle = config.angle or 0
+  self.scale = config.scale or 1
+
+  self.worldX = 0
+  self.worldY = 0
+
+  self.worldAngle = 0
+  self.worldScale = 1
+
+  self.matrix = heartMath.newMatrix()
+  self.worldMatrix = heartMath.newMatrix()
+  self.invWorldMatrix = heartMath.newMatrix()
+
+  self.dirty = true
+
+  self:bindParent()
+end
+
 function BoneComponent:destroy()
-  self.entity:removeComponent(self)
-  self.entity = nil
+  if self.entity then
+    self.entity:removeComponent(self)
+    self.entity = nil
+  end
 end
 
 function BoneComponent:getComponentType()
@@ -55,20 +55,8 @@ function BoneComponent:getConfig()
     },
 
     angle = self.angle,
-
-    scale = {
-      x = self.scaleX,
-      y = self.scaleY,
-    },
+    scale = self.scale,
   }
-end
-
-function BoneComponent:start()
-  self:bindParent()
-end
-
-function BoneComponent:stop()
-  self.parent = nil
 end
 
 function BoneComponent:isDirty()
@@ -85,7 +73,7 @@ function BoneComponent:setDirty(dirty)
       self.matrix:reset()
       self.matrix:translate(self.x, self.y)
       self.matrix:rotate(self.angle)
-      self.matrix:scale(self.scaleX, self.scaleY)
+      self.matrix:scale(self.scale, self.scale)
 
       self.worldMatrix:reset(self.matrix:get())
 

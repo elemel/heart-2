@@ -15,6 +15,7 @@ function RevoluteJointComponent:init(system, entity, config)
   local bodyComponent = assert(parentingComponent:getAncestorComponent("body"))
   local parentBodyComponent = assert(bodyComponent.entity:getComponent("parenting"):getParentAncestorComponent("body"))
   local boneComponent = assert(parentingComponent:getAncestorComponent("bone"))
+
   local x, y = boneComponent:getWorldPosition()
   local collideConnected = config.collideConnected or false
   self.joint = love.physics.newRevoluteJoint(parentBodyComponent.body, bodyComponent.body,
@@ -22,11 +23,15 @@ function RevoluteJointComponent:init(system, entity, config)
 end
 
 function RevoluteJointComponent:destroy()
-  self.joint:destroy()
-  self.joint = nil
+  if self.joint then
+    self.joint:destroy()
+    self.joint = nil
+  end
 
-  self.entity.removeComponent(self)
-  self.entity = nil
+  if self.entity then
+    self.entity.removeComponent(self)
+    self.entity = nil
+  end
 end
 
 function RevoluteJointComponent:getComponentType()

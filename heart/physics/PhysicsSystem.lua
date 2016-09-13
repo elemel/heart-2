@@ -3,27 +3,33 @@ PhysicsSystem.__index = PhysicsSystem
 
 function PhysicsSystem.new(game, config)
   local system = setmetatable({}, PhysicsSystem)
-
-  system.game = assert(game)
-  system.game:addSystem(system)
-
-  system.bodyComponents = {}
-
-  local gravityX = config.gravityX or 0
-  local gravityY = config.gravityY or -10
-  local allowSleeping = config.allowSleeping or true
-
-  system.world = love.physics.newWorld(gravityX, gravityY, allowSleeping)
-
+  system:init(game, config)
   return system
 end
 
-function PhysicsSystem:destroy()
-  self.world:destroy()
-  self.world = nil
+function PhysicsSystem:init(game, config)
+  self.game = assert(game)
+  self.game:addSystem(self)
 
-  self.game:removeSystem(self)
-  self.game = nil
+  self.bodyComponents = {}
+
+  local gravityX = config.gravity and config.gravity.x or 0
+  local gravityY = config.gravity and config.gravity.y or 0
+  local allowSleeping = config.allowSleeping or true
+
+  self.world = love.physics.newWorld(gravityX, gravityY, allowSleeping)
+end
+
+function PhysicsSystem:destroy()
+  if self.world then
+    self.world:destroy()
+    self.world = nil
+  end
+
+  if self.game then
+    self.game:removeSystem(self)
+    self.game = nil
+  end
 end
 
 function PhysicsSystem:getSystemType()
@@ -31,8 +37,15 @@ function PhysicsSystem:getSystemType()
 end
 
 function PhysicsSystem:getConfig()
+  local gravityX, gravityY = self.world:getGravity()
+
   return {
     systemType = "physics",
+
+    gravity = {
+      x = gravityX,
+      y = gravityY,
+    },
   }
 end
 

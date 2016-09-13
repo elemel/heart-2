@@ -3,16 +3,20 @@ AnimationSystem.__index = AnimationSystem
 
 function AnimationSystem.new(game, config)
   local system = setmetatable({}, AnimationSystem)
-
-  system.game = assert(game)
-  system.game:addSystem(system)
-
+  system:init(game, config)
   return system
 end
 
+function AnimationSystem:init(game, config)
+  self.game = assert(game)
+  self.game:addSystem(self)
+end
+
 function AnimationSystem:destroy()
-  self.game:removeSystem(self)
-  self.game = nil
+  if self.game then
+    self.game:removeSystem(self)
+    self.game = nil
+  end
 end
 
 function AnimationSystem:getSystemType()

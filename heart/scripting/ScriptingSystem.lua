@@ -11,12 +11,24 @@ function ScriptingSystem:init(game, config)
   self.game = assert(game)
   self.game:addSystem(self)
 
+  self.environment = {
+    assert = assert,
+    ipairs = ipairs,
+    love = love,
+    pairs = pairs,
+    print = print
+  }
+
+  self.environment.__index = self.environment
+
   self.scriptComponents = {}
 end
 
 function ScriptingSystem:destroy()
-  self.game:removeSystem(self)
-  self.game = nil
+  if self.game then
+    self.game:removeSystem(self)
+    self.game = nil
+  end
 end
 
 function ScriptingSystem:getSystemType()

@@ -61,8 +61,8 @@ function Entity:removeComponent(component)
   common.removeArrayValue(self.components, component)
 end
 
-function Entity:getComponent(type)
-  return self.components[type]
+function Entity:getComponent(key)
+  return self.components[key]
 end
 
 function Entity:getConfig()

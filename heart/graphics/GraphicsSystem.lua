@@ -3,18 +3,24 @@ GraphicsSystem.__index = GraphicsSystem
 
 function GraphicsSystem.new(game, config)
   local system = setmetatable({}, GraphicsSystem)
-
-  system.game = assert(game)
-  system.game:addSystem(system)
-
-  system.spriteComponents = {}
-
+  system:init(game, config)
   return system
 end
 
+function GraphicsSystem:init(game, config)
+  self.game = assert(game)
+  self.game:addSystem(self)
+
+  self.spriteComponents = {}
+end
+
 function GraphicsSystem:destroy()
-  self.game:removeSystem(self)
-  self.game = nil
+  self.spriteComponents = nil
+
+  if self.game then
+    self.game:removeSystem(self)
+    self.game = nil
+  end
 end
 
 function GraphicsSystem:getSystemType()

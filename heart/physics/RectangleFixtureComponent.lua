@@ -20,8 +20,8 @@ function RectangleFixtureComponent:init(system, entity, config)
     bodyComponent = assert(self.entity:getComponent("body"))
   end
 
-  local width = config.width or 1
-  local height = config.height or 1
+  local width = config.dimensions and config.dimensions.width or 1
+  local height = config.dimensions and config.dimensions.height or 1
   local angle = config.angle or 0
   local shape = love.physics.newRectangleShape(0, 0, width, height, angle)
 
@@ -31,11 +31,15 @@ function RectangleFixtureComponent:init(system, entity, config)
 end
 
 function RectangleFixtureComponent:destroy()
-  self.fixture:destroy()
-  self.fixture = nil
+  if self.fixture then
+    self.fixture:destroy()
+    self.fixture = nil
+  end
 
-  self.entity.removeComponent(self)
-  self.entity = nil
+  if self.entity then
+    self.entity.removeComponent(self)
+    self.entity = nil
+  end
 end
 
 function RectangleFixtureComponent:getComponentType()

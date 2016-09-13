@@ -22,6 +22,11 @@ function love.load()
 
       {
         systemType = "physics",
+
+        gravity = {
+          x = 0,
+          y = -10,
+        },
       },
 
       {
@@ -48,7 +53,12 @@ function love.load()
 
           {
             componentType = "rectangleFixture",
-            width = 10,
+
+            dimensions = {
+              width = 10,
+              height = 1,
+            },
+
             angle = 0.1,
           },
         },
@@ -78,17 +88,21 @@ function love.load()
 
           {
             componentType = "rectangleFixture",
-            width = 2,
-            height = 0.5,
+
+            dimensions = {
+              width = 2,
+              height = 0.5,
+            },
           },
 
           {
             componentType = "sprite",
-            image = "resources/hull.png",
+            imagePath = "resources/images/hull.png",
           },
 
           {
             componentType = "script",
+            scriptPath = "resources/scripts/CarScript.lua"
           },
         },
       },
@@ -127,7 +141,7 @@ function love.load()
 
           {
             componentType = "sprite",
-            image = "resources/wheel.png",
+            imagePath = "resources/images/wheel.png",
           },
         },
       },
@@ -166,7 +180,7 @@ function love.load()
 
           {
             componentType = "sprite",
-            image = "resources/wheel.png",
+            imagePath = "resources/images/wheel.png",
           },
         },
       },

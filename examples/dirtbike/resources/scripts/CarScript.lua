@@ -1,10 +1,10 @@
-function init(self)
+function init()
 end
 
-function destroy(self)
+function destroy()
 end
 
-function update(self, dt)
+function update(dt)
   if not self.revoluteJointComponents then
     local parentingComponent = assert(entity:getComponent("parenting"))
     self.revoluteJointComponents = parentingComponent:getDescendantComponents("revoluteJoint")
@@ -21,5 +21,5 @@ function update(self, dt)
   end
 end
 
-function debugDraw(self)
+function debugDraw()
 end

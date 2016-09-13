@@ -2,17 +2,18 @@ local Matrix = {}
 Matrix.__index = Matrix
 
 function Matrix.new(a, b, c, d, e, f)
-  local matrix = {}
-  setmetatable(matrix, Matrix)
-
-  matrix.a = a or 1
-  matrix.b = b or 0
-  matrix.c = c or 0
-  matrix.d = d or 0
-  matrix.e = e or 1
-  matrix.f = f or 0
-
+  local matrix = setmetatable({}, Matrix)
+  matrix:init(a, b, c, d, e, f)
   return matrix
+end
+
+function Matrix:init(a, b, c, d, e, f)
+  self.a = a or 1
+  self.b = b or 0
+  self.c = c or 0
+  self.d = d or 0
+  self.e = e or 1
+  self.f = f or 0
 end
 
 function Matrix:get()

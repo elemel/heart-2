@@ -3,28 +3,37 @@ SpriteComponent.__index = SpriteComponent
 
 function SpriteComponent.new(system, entity, config)
   local component = setmetatable({}, SpriteComponent)
-
-  component.system = assert(system)
-  component.system.spriteComponents[component] = true
-
-  component.entity = assert(entity)
-  component.entity:addComponent(component)
-
-  component.boneComponent = assert(component.entity:getComponent("bone"))
-  component.image = love.graphics.newImage(config.image)
-  component.image:setFilter("nearest", "nearest")
-
+  component:init(system, entity, config)
   return component
 end
 
+function SpriteComponent:init(system, entity, config)
+  self.system = assert(system)
+  self.system.spriteComponents[self] = true
+
+  self.entity = assert(entity)
+  self.entity:addComponent(self)
+
+  self.boneComponent = assert(self.entity:getComponent("bone"))
+
+  self.imagePath = assert(config.imagePath)
+  self.image = love.graphics.newImage(self.imagePath)
+  self.image:setFilter("nearest", "nearest")
+end
+
 function SpriteComponent:destroy()
+  self.image = nil
   self.boneComponent = nil
 
-  self.entity:removeComponent(self)
-  self.entity = nil
+  if self.entity then
+    self.entity:removeComponent(self)
+    self.entity = nil
+  end
 
-  self.system.sprites[self] = nil
-  self.system = nil
+  if self.system then
+    self.system.sprites[self] = nil
+    self.system = nil
+  end
 end
 
 function SpriteComponent:getComponentType()
@@ -34,6 +43,7 @@ end
 function SpriteComponent:getConfig()
   return {
     componentType = "sprite",
+    imagePath = self.imagePath,
   }
 end
 
