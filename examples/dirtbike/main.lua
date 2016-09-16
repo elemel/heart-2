@@ -5,12 +5,12 @@ function love.load()
   love.window.setMode(800, 600, {
     fullscreentype = "desktop",
     resizable = true,
-    highdpi = true,
+    -- highdpi = true,
   })
 
   love.physics.setMeter(1)
 
-  game = heart.newGame({
+  game = heart.game.newGame({
     systems = {
       {
         systemType = "parenting",
@@ -187,13 +187,21 @@ function love.load()
     },
   })
 
-  print(jsua.write(game:getConfig()))
+  -- print(jsua.write(game:getConfig()))
+
+  editor = heart.editor.newEditor(game)
 end
 
 function love.update(dt)
   game:update(dt)
+  editor:update(dt)
 end
 
 function love.draw()
   game:draw()
+  editor:draw()
+end
+
+function love.mousepressed(x, y, button, istouch)
+  editor:mousepressed(x, y, button, istouch)
 end

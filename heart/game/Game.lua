@@ -5,7 +5,7 @@ local parenting = require("heart.parenting")
 local physics = require("heart.physics")
 local scripting = require("heart.scripting")
 
-local Entity = require("heart.Entity")
+local Entity = require("heart.game.Entity")
 
 local Game = {}
 Game.__index = Game
@@ -128,6 +128,8 @@ function Game:update(dt)
 end
 
 function Game:draw()
+  love.graphics.push()
+
   local width, height = love.graphics:getDimensions()
   local scale = (1 / 4) * 0.5 * height
 
@@ -142,6 +144,8 @@ function Game:draw()
   for i, system in ipairs(self.systems) do
     system:debugDraw()
   end
+
+  love.graphics.pop()
 end
 
 return Game

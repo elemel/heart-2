@@ -1,7 +1,7 @@
-local Game = require("heart.Game")
-local Entity = require("heart.Entity")
+local editor = require("heart.editor")
+local game = require("heart.game")
 
 return {
-  newEntity = Entity.new,
-  newGame = Game.new,
+  editor = editor,
+  game = game,
 }

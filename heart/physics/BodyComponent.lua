@@ -54,4 +54,8 @@ function BodyComponent:getConfig()
   }
 end
 
+function BodyComponent:getBody()
+  return self.body
+end
+
 return BodyComponent
