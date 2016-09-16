@@ -106,8 +106,7 @@ function BoneComponent:setDirty(dirty)
 end
 
 function BoneComponent:bindParent()
-  local parentingComponent = self.entity:getComponent("parenting")
-  self.parent = parentingComponent and parentingComponent:getParentAncestorComponent("bone")
+  self.parent = self.entity:getParentAncestorComponent("bone")
   self.dirty = true
 end
 

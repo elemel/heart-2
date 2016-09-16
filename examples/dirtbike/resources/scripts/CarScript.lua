@@ -6,8 +6,7 @@ end
 
 function update(dt)
   if not self.revoluteJointComponents then
-    local parentingComponent = assert(entity:getComponent("parenting"))
-    self.revoluteJointComponents = parentingComponent:getDescendantComponents("revoluteJoint")
+    self.revoluteJointComponents = entity:getDescendantComponents("revoluteJoint")
   end
 
   local leftInput = love.keyboard.isDown("a") or love.keyboard.isDown("left")

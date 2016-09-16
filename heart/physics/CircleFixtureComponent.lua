@@ -13,14 +13,7 @@ function CircleFixtureComponent:init(system, entity, config)
   self.entity = assert(entity)
   self.entity:addComponent(self)
 
-  local parentingComponent = self.entity:getComponent("parenting")
-  local bodyComponent
-
-  if parentingComponent then
-    bodyComponent = assert(parentingComponent:getAncestorComponent("body"))
-  else
-    bodyComponent = assert(self.entity:getComponent("body"))
-  end
+  local bodyComponent = assert(self.entity:getAncestorComponent("body"))
 
   local radius = config.radius or 1
   local shape = love.physics.newCircleShape(radius)

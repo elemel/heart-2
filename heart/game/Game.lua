@@ -1,7 +1,6 @@
 local animation = require("heart.animation")
 local common = require("heart.common")
 local graphics = require("heart.graphics")
-local parenting = require("heart.parenting")
 local physics = require("heart.physics")
 local scripting = require("heart.scripting")
 
@@ -28,7 +27,7 @@ function Game:init(config)
 
   if config.entities then
     for i, entityConfig in ipairs(config.entities) do
-      Entity.new(self, entityConfig)
+      Entity.new(self, nil, entityConfig)
     end
   end
 end
@@ -62,8 +61,6 @@ function Game:loadSystem(config)
     animation.newAnimationSystem(self, config)
   elseif config.systemType == "graphics" then
     graphics.newGraphicsSystem(self, config)
-  elseif config.systemType == "parenting" then
-    parenting.newParentingSystem(self, config)
   elseif config.systemType == "physics" then
     physics.newPhysicsSystem(self, config)
   elseif config.systemType == "scripting" then
@@ -81,9 +78,6 @@ function Game:loadComponent(entity, config)
   elseif config.componentType == "circleFixture" then
     local system = assert(self.systems.physics)
     physics.newCircleFixtureComponent(system, entity, config)
-  elseif config.componentType == "parenting" then
-    local system = assert(self.systems.parenting)
-    parenting.newParentingComponent(system, entity, config)
   elseif config.componentType == "rectangleFixture" then
     local system = assert(self.systems.physics)
     physics.newRectangleFixtureComponent(system, entity, config)

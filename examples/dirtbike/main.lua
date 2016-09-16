@@ -13,10 +13,6 @@ function love.load()
   game = heart.game.newGame({
     systems = {
       {
-        systemType = "parenting",
-      },
-
-      {
         systemType = "scripting",
       },
 
@@ -69,10 +65,6 @@ function love.load()
 
         components = {
           {
-            componentType = "parenting",
-          },
-
-          {
             componentType = "bone",
 
             position = {
@@ -105,89 +97,81 @@ function love.load()
             scriptPath = "resources/scripts/CarScript.lua"
           },
         },
-      },
 
-      {
-        uuid = "bb28a856-8892-4a45-aa5c-2af8a01dda00",
-
-        components = {
+        children = {
           {
-            componentType = "parenting",
-            parentEntityUuid = "ed15bf2b-60ff-4eba-86cc-51ad8882346f",
-          },
+            uuid = "bb28a856-8892-4a45-aa5c-2af8a01dda00",
 
-          {
-            componentType = "bone",
+            components = {
+              {
+                componentType = "bone",
 
-            position = {
-              x = 1,
-              y = 0,
+                position = {
+                  x = 1,
+                  y = 0,
+                },
+              },
+
+              {
+                componentType = "body",
+                bodyType = "dynamic",
+              },
+
+              {
+                componentType = "circleFixture",
+                radius = 0.5,
+              },
+
+              {
+                componentType = "revoluteJoint",
+              },
+
+              {
+                componentType = "sprite",
+                imagePath = "resources/images/wheel.png",
+              },
             },
           },
 
           {
-            componentType = "body",
-            bodyType = "dynamic",
-          },
+            uuid = "b9d306e1-432f-40f6-9bcf-d606134a3c75",
 
-          {
-            componentType = "circleFixture",
-            radius = 0.5,
-          },
+            components = {
+              {
+                componentType = "bone",
 
-          {
-            componentType = "revoluteJoint",
-          },
+                position = {
+                  x = -1,
+                  y = 0,
+                },
+              },
 
-          {
-            componentType = "sprite",
-            imagePath = "resources/images/wheel.png",
-          },
-        },
-      },
+              {
+                componentType = "body",
+                bodyType = "dynamic",
+              },
 
-      {
-        uuid = "b9d306e1-432f-40f6-9bcf-d606134a3c75",
+              {
+                componentType = "circleFixture",
+                radius = 0.5,
+              },
 
-        components = {
-          {
-            componentType = "parenting",
-            parentEntityUuid = "ed15bf2b-60ff-4eba-86cc-51ad8882346f",
-          },
+              {
+                componentType = "revoluteJoint",
+              },
 
-          {
-            componentType = "bone",
-
-            position = {
-              x = -1,
-              y = 0,
+              {
+                componentType = "sprite",
+                imagePath = "resources/images/wheel.png",
+              },
             },
-          },
-
-          {
-            componentType = "body",
-            bodyType = "dynamic",
-          },
-
-          {
-            componentType = "circleFixture",
-            radius = 0.5,
-          },
-
-          {
-            componentType = "revoluteJoint",
-          },
-
-          {
-            componentType = "sprite",
-            imagePath = "resources/images/wheel.png",
           },
         },
       },
     },
   })
 
-  -- print(jsua.write(game:getConfig()))
+  print(jsua.write(game:getConfig()))
 
   editor = heart.editor.newEditor(game)
 end

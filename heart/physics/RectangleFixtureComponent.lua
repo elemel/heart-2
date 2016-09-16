@@ -11,14 +11,7 @@ function RectangleFixtureComponent:init(system, entity, config)
   self.entity = assert(entity)
   self.entity:addComponent(self)
 
-  local parentingComponent = self.entity:getComponent("parenting")
-  local bodyComponent
-
-  if parentingComponent then
-    bodyComponent = assert(parentingComponent:getAncestorComponent("body"))
-  else
-    bodyComponent = assert(self.entity:getComponent("body"))
-  end
+  local bodyComponent = assert(self.entity:getAncestorComponent("body"))
 
   local width = config.dimensions and config.dimensions.width or 1
   local height = config.dimensions and config.dimensions.height or 1

@@ -11,10 +11,9 @@ function RevoluteJointComponent:init(system, entity, config)
   self.entity = assert(entity)
   self.entity:addComponent(self)
 
-  local parentingComponent = assert(self.entity:getComponent("parenting"))
-  local bodyComponent = assert(parentingComponent:getAncestorComponent("body"))
-  local parentBodyComponent = assert(bodyComponent.entity:getComponent("parenting"):getParentAncestorComponent("body"))
-  local boneComponent = assert(parentingComponent:getAncestorComponent("bone"))
+  local bodyComponent = assert(self.entity:getAncestorComponent("body"))
+  local parentBodyComponent = assert(bodyComponent.entity:getParentAncestorComponent("body"))
+  local boneComponent = assert(self.entity:getAncestorComponent("bone"))
 
   local x, y = boneComponent:getWorldPosition()
   local collideConnected = config.collideConnected or false
