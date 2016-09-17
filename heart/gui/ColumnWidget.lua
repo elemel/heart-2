@@ -56,6 +56,13 @@ function ColumnWidget:removeChild(child)
   end
 end
 
+function ColumnWidget:clearChildren()
+  self.children = {}
+  self.childWidths, self.childHeights = {}, {}
+
+  self.dirty = true
+end
+
 function ColumnWidget:getBackgroundColor()
   return self.backgroundColor
 end

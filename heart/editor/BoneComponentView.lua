@@ -1,15 +1,15 @@
 local gui = require("heart.gui")
 
-local BodyComponentView = {}
-BodyComponentView.__index = BodyComponentView
+local BoneComponentView = {}
+BoneComponentView.__index = BoneComponentView
 
-function BodyComponentView.new(component, parentWidget)
-  local view = setmetatable({}, BodyComponentView)
+function BoneComponentView.new(component, parentWidget)
+  local view = setmetatable({}, BoneComponentView)
   view:init(component, parentWidget)
   return view
 end
 
-function BodyComponentView:init(component, parentWidget)
+function BoneComponentView:init(component, parentWidget)
   self.component = component
 
   local propertyListWidget = gui.newColumnWidget()
@@ -17,7 +17,7 @@ function BodyComponentView:init(component, parentWidget)
   parentWidget:addChild(propertyListWidget)
 
   local titleWidget = gui.newTextWidget()
-  titleWidget:setText("body")
+  titleWidget:setText("bone")
   titleWidget:setFont(love.graphics:getFont())
   titleWidget:setColor({255, 255, 255, 255})
   propertyListWidget:addChild(titleWidget)
@@ -40,13 +40,13 @@ function BodyComponentView:init(component, parentWidget)
   end
 end
 
-function BodyComponentView:update(dt)
-  local x, y = self.component:getBody():getPosition()
-  local angle = self.component:getBody():getAngle()
+function BoneComponentView:update(dt)
+  local x, y = self.component:getPosition()
+  local angle = self.component:getAngle()
 
   self.propertyValueWidgets.x:setText(string.format("%g", x))
   self.propertyValueWidgets.y:setText(string.format("%g", y))
   self.propertyValueWidgets.angle:setText(string.format("%g", angle))
 end
 
-return BodyComponentView
+return BoneComponentView

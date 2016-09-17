@@ -75,9 +75,7 @@ function BoneComponent:setDirty(dirty)
   assert(type(dirty) == "boolean")
 
   if dirty ~= self.dirty then
-    if dirty then
-      self.dirty = true
-    elseif self.dirty then
+    if self.dirty then
       self.matrix:reset()
       self.matrix:translate(self.x, self.y)
       self.matrix:rotate(self.angle)
@@ -99,9 +97,9 @@ function BoneComponent:setDirty(dirty)
       if self.parent then
         self.worldAngle = self.worldAngle - self.parent.angle
       end
-
-      self.dirty = false
     end
+
+    self.dirty = dirty
   end
 end
 
