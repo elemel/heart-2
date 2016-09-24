@@ -1,4 +1,4 @@
-local gui = require("heart.gui")
+local guilt = require("guilt")
 local EntityView = require("heart.editor.EntityView")
 
 local EntityTreeView = {}
@@ -15,12 +15,12 @@ function EntityTreeView:init(editor, game, parentWidget, columnIndex, rowIndex)
   self.game = assert(game)
   self.parentWidget = assert(parentWidget)
 
-  self.widget = gui.newColumnWidget()
+  self.widget = guilt.newColumnWidget()
   self.widget:setBackgroundColor({0, 127, 127, 127})
   parentWidget:setChild(columnIndex, rowIndex, self.widget)
 
   for i, entity in ipairs(self.game.entities) do
-    local textWidget = gui.newTextWidget()
+    local textWidget = guilt.newTextWidget()
     textWidget:setText(entity:getUuid())
     textWidget:setFont(love.graphics:getFont())
     textWidget:setColor({255, 255, 255, 255})

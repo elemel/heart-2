@@ -1,6 +1,6 @@
 local EntityView = require("heart.editor.EntityView")
 local EntityTreeView = require("heart.editor.EntityTreeView")
-local gui = require("heart.gui")
+local guilt = require("guilt")
 
 local Editor = {}
 Editor.__index = Editor
@@ -14,25 +14,25 @@ end
 function Editor:init(game)
   self.game = assert(game)
 
-  self.rootWidget = gui.newTableWidget(1, 3)
+  self.rootWidget = guilt.newTableWidget(1, 3)
   self.rootWidget:setRowWeight(2, 1)
   self.rootWidget:setBackgroundColor({127, 0, 0, 127})
 
-  local systemListWidget = gui.newRowWidget()
+  local systemListWidget = guilt.newRowWidget()
   systemListWidget:setBackgroundColor({0, 127, 0, 127})
   self.rootWidget:setChild(1, 1, systemListWidget)
 
-  local horizontalWidget = gui.newTableWidget(3, 1)
+  local horizontalWidget = guilt.newTableWidget(3, 1)
   horizontalWidget:setColumnWeight(2, 1)
   self.rootWidget:setChild(1, 2, horizontalWidget)
 
   for i, system in ipairs(game.systems) do
-    local textWidget = gui.newTextWidget()
+    local textWidget = guilt.newTextWidget()
     textWidget:setText(system:getSystemType())
     textWidget:setFont(love.graphics:getFont())
     textWidget:setColor({255, 255, 255, 255})
 
-    local borderWidget = gui.newBorderWidget()
+    local borderWidget = guilt.newBorderWidget()
     borderWidget:setBorders(10)
     borderWidget:setChild(textWidget)
     systemListWidget:addChild(borderWidget)

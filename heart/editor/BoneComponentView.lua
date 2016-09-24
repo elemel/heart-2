@@ -1,4 +1,4 @@
-local gui = require("heart.gui")
+local guilt = require("guilt")
 
 local BoneComponentView = {}
 BoneComponentView.__index = BoneComponentView
@@ -12,11 +12,11 @@ end
 function BoneComponentView:init(component, parentWidget)
   self.component = component
 
-  local propertyListWidget = gui.newColumnWidget()
+  local propertyListWidget = guilt.newColumnWidget()
   propertyListWidget:setBackgroundColor({127, 0, 127, 127})
   parentWidget:addChild(propertyListWidget)
 
-  local titleWidget = gui.newTextWidget()
+  local titleWidget = guilt.newTextWidget()
   titleWidget:setText("bone")
   titleWidget:setFont(love.graphics:getFont())
   titleWidget:setColor({255, 255, 255, 255})
@@ -25,13 +25,13 @@ function BoneComponentView:init(component, parentWidget)
   self.propertyValueWidgets = {}
 
   for i, name in ipairs({"x", "y", "angle"}) do
-    local nameWidget = gui.newTextWidget()
+    local nameWidget = guilt.newTextWidget()
     nameWidget:setText(name)
     nameWidget:setFont(love.graphics:getFont())
     nameWidget:setColor({255, 255, 255, 255})
     propertyListWidget:addChild(nameWidget)
 
-    local valueWidget = gui.newTextWidget()
+    local valueWidget = guilt.newTextWidget()
     valueWidget:setFont(love.graphics:getFont())
     valueWidget:setColor({255, 255, 255, 255})
     propertyListWidget:addChild(valueWidget)

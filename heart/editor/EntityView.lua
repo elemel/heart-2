@@ -1,6 +1,6 @@
 local BodyComponentView = require("heart.editor.BodyComponentView")
 local BoneComponentView = require("heart.editor.BoneComponentView")
-local gui = require("heart.gui")
+local guilt = require("guilt")
 
 local EntityView = {}
 EntityView.__index = EntityView
@@ -14,7 +14,7 @@ end
 function EntityView:init(entity, parentWidget)
   self.entity = assert(entity)
 
-  self.widget = gui.newColumnWidget()
+  self.widget = guilt.newColumnWidget()
   self.widget:setBackgroundColor({127, 127, 0, 127})
   parentWidget:setChild(3, 1, self.widget)
 
