@@ -1,5 +1,5 @@
-local BodyComponentView = require("heart.editor.BodyComponentView")
-local BoneComponentView = require("heart.editor.BoneComponentView")
+local EntityView = require("heart.editor.EntityView")
+local EntityTreeView = require("heart.editor.EntityTreeView")
 local gui = require("heart.gui")
 
 local Editor = {}
@@ -14,66 +14,39 @@ end
 function Editor:init(game)
   self.game = assert(game)
 
-  self.rootWidget = gui.newBorderWidget()
+  self.rootWidget = gui.newTableWidget(1, 3)
+  self.rootWidget:setRowWeight(2, 1)
   self.rootWidget:setBackgroundColor({127, 0, 0, 127})
 
   local systemListWidget = gui.newRowWidget()
   systemListWidget:setBackgroundColor({0, 127, 0, 127})
-  self.rootWidget:setChild("top", systemListWidget)
+  self.rootWidget:setChild(1, 1, systemListWidget)
+
+  local horizontalWidget = gui.newTableWidget(3, 1)
+  horizontalWidget:setColumnWeight(2, 1)
+  self.rootWidget:setChild(1, 2, horizontalWidget)
 
   for i, system in ipairs(game.systems) do
     local textWidget = gui.newTextWidget()
     textWidget:setText(system:getSystemType())
     textWidget:setFont(love.graphics:getFont())
     textWidget:setColor({255, 255, 255, 255})
-    systemListWidget:addChild(textWidget)
+
+    local borderWidget = gui.newBorderWidget()
+    borderWidget:setBorders(10)
+    borderWidget:setChild(textWidget)
+    systemListWidget:addChild(borderWidget)
   end
 
-  self.entityListWidget = gui.newColumnWidget()
-  self.entityListWidget:setBackgroundColor({0, 127, 127, 127})
-  self.rootWidget:setChild("left", self.entityListWidget)
-
-  self.componentListWidget = gui.newColumnWidget()
-  self.componentListWidget:setBackgroundColor({127, 127, 0, 127})
-  self.rootWidget:setChild("right", self.componentListWidget)
-
-  for i, entity in ipairs(game.entities) do
-    local textWidget = gui.newTextWidget()
-    textWidget:setText(entity:getUuid())
-    textWidget:setFont(love.graphics:getFont())
-    textWidget:setColor({255, 255, 255, 255})
-    self.entityListWidget:addChild(textWidget)
-
-    textWidget.callbacks.mousepressed = function(x, y, button, istouch)
-      self.componentListWidget:clearChildren()
-      self.bodyComponentView = nil
-      self.boneComponentView = nil
-
-      if entity:getComponent("bone") then
-        local boneComponent = entity:getComponent("bone")
-        self.boneComponentView = BoneComponentView.new(boneComponent, self.componentListWidget)
-      end
-
-      if entity:getComponent("body") then
-        local bodyComponent = entity:getComponent("body")
-        self.bodyComponentView = BodyComponentView.new(bodyComponent, self.componentListWidget)
-      end
-
-      return true
-    end
-  end
+  self.entityTreeView = EntityTreeView.new(self, game, horizontalWidget, 1, 1)
 end
 
 function Editor:destroy()
 end
 
 function Editor:update(dt)
-  if self.bodyComponentView then
-    self.bodyComponentView:update(dt)
-  end
-
-  if self.boneComponentView then
-    self.boneComponentView:update(dt)
+  if self.entityView then
+    self.entityView:update(dt)
   end
 
   local width, height = love.graphics.getDimensions()

@@ -112,7 +112,7 @@ function RowWidget:mousepressed(x, y, button, istouch)
 
     if childX <= localX and localX < childX + childWidth and
         childY <= localY and localY < childY + childHeight then
-      if child:mousepressed(localX, localY) then
+      if child:mousepressed(localX, localY, button, istouch) then
         return true
       end
     end

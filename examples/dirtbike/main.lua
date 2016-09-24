@@ -171,7 +171,7 @@ function love.load()
     },
   })
 
-  print(jsua.write(game:getConfig()))
+  -- print(jsua.write(game:getConfig()))
 
   editor = heart.editor.newEditor(game)
 end

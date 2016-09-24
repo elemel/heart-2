@@ -1,5 +1,3 @@
-local common = require("heart.common")
-
 local BorderWidget = {}
 BorderWidget.__index = BorderWidget
 
@@ -13,16 +11,14 @@ function BorderWidget:init()
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
 
-  self.children = {}
-  self.childNames = {"top", "left", "center", "right", "bottom"}
-  self.childWidths, self.childHeights = {}, {}
+  self.leftBorder = 0
+  self.topBorder = 0
+  self.rightBorder = 0
+  self.bottomBorder = 0
 
-  for i, name in ipairs(self.childNames) do
-    self.childWidths[name], self.childHeights[name] = 0
-    self.childHeights[name] = 0
-  end
-
+  self.contentWidth, self.contentHeight = 0, 0
   self.dirty = false
+  self.callbacks = {}
 end
 
 function BorderWidget:getBounds()
@@ -47,37 +43,51 @@ function BorderWidget:setDirty(dirty)
   end
 end
 
-function BorderWidget:getChild(name)
-  return self.children[name]
+function BorderWidget:getChild()
+  return self.child
 end
 
-function BorderWidget:setChild(name, child)
-  if self.children[name] ~= child then
-    if child and child.parent then
-      child.parent:removeChild(child)
-    end 
+function BorderWidget:setChild(child)
+  if self.child then
+    self.child.parent = nil
+  end
 
-    if self.children[name] then
-      self:removeChild(self.children[name])
-    end
+  self.child = child
 
-    self.children[name] = child
+  if self.child then
+    self.child.parent = self
+  end
 
-    if child then
-      child.parent = self
-    end
+  self:setDirty(true)
+end
+
+function BorderWidget:getBorders()
+  return self.leftBorder, self.topBorder, self.rightBorder, self.bottomBorder
+end
+
+function BorderWidget:setBorders(leftBorder, topBorder, rightBorder, bottomBorder)
+  assert(leftBorder)
+  topBorder = topBorder or leftBorder
+  rightBorder = rightBorder or leftBorder
+  bottomBorder = bottomBorder or topBorder
+
+  if leftBorder ~= self.leftBorder or topBorder ~= self.topBorder or
+      rightBorder ~= self.rightBorder or bottomBorder ~= self.bottomBorder then
+    self.leftBorder = leftBorder
+    self.topBorder = topBorder
+    self.rightBorder = rightBorder
+    self.bottomBorder = bottomBorder
 
     self:setDirty(true)
   end
 end
 
-function BorderWidget:removeChild(child)
-  local name = common.removeValue(self.children, child)
+function BorderWidget:getColor()
+  return self.color
+end
 
-  if name then
-    self.childWidths[name], self.childHeights[name] = 0, 0
-    self:setDirty(true)
-  end
+function BorderWidget:setColor(color)
+  self.color = color
 end
 
 function BorderWidget:getBackgroundColor()
@@ -89,55 +99,24 @@ function BorderWidget:setBackgroundColor(color)
 end
 
 function BorderWidget:measure()
-  local contentWidth, contentHeight = 0, 0
-
-  for i, name in ipairs(self.childNames) do
-    local child = self.children[name]
-    local width, height = 0, 0
-
-    if child then
-      width, height = child:measure()
-
-      contentWidth = contentWidth + width
-      contentHeight = contentHeight + height
-    end
-
-    self.childWidths[name], self.childHeights[name] = width, height
+  if self.child then
+    self.contentWidth, self.contentHeight = self.child:measure()
+  else
+    self.contentWidth, self.contentHeight = 0, 0
   end
 
-  return contentWidth, contentHeight
+  return self.leftBorder + self.contentWidth + self.rightBorder,
+    self.topBorder + self.contentHeight + self.bottomBorder
 end
 
 function BorderWidget:arrange(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
-  local widths, heights = self.childWidths, self.childHeights
-
-  local centerWidth = width - widths.left - widths.right
-  local centerHeight = height - heights.top - heights.bottom
-
-  if self.children.top then
-    self.children.top:arrange(0, 0, width, heights.top)
-  end
-
-  if self.children.left then
-    self.children.left:arrange(0, heights.top, widths.left, centerHeight)
-  end
-
-  if self.children.center then
-    self.children.center:arrange(widths.left, heights.top,
-      centerWidth, centerHeight)
-  end
-
-  if self.children.right then
-    self.children.right:arrange(width - widths.right, heights.top,
-      widths.right, centerHeight)
-  end
-
-  if self.children.bottom then
-    self.children.top:arrange(0, height - heights.bottom,
-      width, heights.bottom)
+  if self.child then
+    self.child:arrange(self.leftBorder, self.topBorder,
+      self.width - self.leftBorder - self.rightBorder,
+      self.height - self.topBorder - self.bottomBorder)
   end
 
   self.dirty = false
@@ -149,23 +128,14 @@ function BorderWidget:draw(x, y)
     love.graphics.rectangle("fill", x + self.x, y + self.y, self.width, self.height)
   end
 
-  for name, child in pairs(self.children) do
-    child:draw(x + self.x, y + self.y)
+  if self.child then
+    self.child:draw(x + self.x, y + self.y)
   end
 end
 
 function BorderWidget:mousepressed(x, y, button, istouch)
-  local localX, localY = x - self.x, y - self.y
-
-  for name, child in pairs(self.children) do
-    local childX, childY, childWidth, childHeight = child:getBounds()
-
-    if childX <= localX and localX < childX + childWidth and
-        childY <= localY and localY < childY + childHeight then
-      if child:mousepressed(localX, localY) then
-        return true
-      end
-    end
+  if self.child then
+    return self.child:mousepressed(x - self.x, y - self.y, button, istouch)
   end
 
   return false

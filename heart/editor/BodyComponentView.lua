@@ -12,6 +12,9 @@ end
 function BodyComponentView:init(component, parentWidget)
   self.component = component
 
+  local tableWidget = gui.newTableWidget()
+  parentWidget:addChild(tableWidget)
+
   local propertyListWidget = gui.newColumnWidget()
   propertyListWidget:setBackgroundColor({127, 0, 127, 127})
   parentWidget:addChild(propertyListWidget)
@@ -24,17 +27,20 @@ function BodyComponentView:init(component, parentWidget)
 
   self.propertyValueWidgets = {}
 
+  tableWidget:setColumnCount(2)
+  tableWidget:setRowCount(3)
+
   for i, name in ipairs({"x", "y", "angle"}) do
     local nameWidget = gui.newTextWidget()
     nameWidget:setText(name)
     nameWidget:setFont(love.graphics:getFont())
     nameWidget:setColor({255, 255, 255, 255})
-    propertyListWidget:addChild(nameWidget)
+    tableWidget:setChild(1, i, nameWidget)
 
     local valueWidget = gui.newTextWidget()
     valueWidget:setFont(love.graphics:getFont())
     valueWidget:setColor({255, 255, 255, 255})
-    propertyListWidget:addChild(valueWidget)
+    tableWidget:setChild(2, i, valueWidget)
 
     self.propertyValueWidgets[name] = valueWidget
   end

@@ -19,6 +19,12 @@ function ColumnWidget:init()
   self.dirty = false
 end
 
+function ColumnWidget:destroy()
+  if self.parent then
+    self.parent:removeChild(self)
+  end
+end
+
 function ColumnWidget:getBounds()
   return self.x, self.y, self.width, self.height
 end
@@ -119,7 +125,7 @@ function ColumnWidget:mousepressed(x, y, button, istouch)
 
     if childX <= localX and localX < childX + childWidth and
         childY <= localY and localY < childY + childHeight then
-      if child:mousepressed(localX, localY) then
+      if child:mousepressed(localX, localY, button, istouch) then
         return true
       end
     end
