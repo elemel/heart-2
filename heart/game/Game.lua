@@ -16,6 +16,9 @@ function Game.new(config)
 end
 
 function Game:init(config)
+  self.viewportX, self.viewportY = 0, 0
+  self.viewportWidth, self.viewportHeight = 0, 0
+
   self.systems = {}
   self.entities = {}
 
@@ -30,6 +33,15 @@ function Game:init(config)
       Entity.new(self, nil, entityConfig)
     end
   end
+end
+
+function Game:getViewport()
+  return self.viewportX, self.viewportY, self.viewportWidth, self.viewportHeight
+end
+
+function Game:setViewport(x, y, width, height)
+  self.viewportX, self.viewportY = x, y
+  self.viewportWidth, self.viewportHeight = width, height
 end
 
 function Game:addSystem(system)
@@ -124,10 +136,10 @@ end
 function Game:draw()
   love.graphics.push()
 
-  local width, height = love.graphics:getDimensions()
-  local scale = (1 / 4) * 0.5 * height
+  local scale = (1 / 4) * 0.5 * self.viewportHeight
 
-  love.graphics.translate(0.5 * width, 0.5 * height)
+  love.graphics.translate(self.viewportX + 0.5 * self.viewportWidth,
+    self.viewportY + 0.5 * self.viewportHeight)
   love.graphics.scale(scale, scale)
   love.graphics.setLineWidth(1 / scale)
 

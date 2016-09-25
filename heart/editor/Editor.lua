@@ -39,20 +39,37 @@ function Editor:init(game)
   end
 
   self.entityTreeView = EntityTreeView.new(self, game, horizontalWidget, 1, 1)
+  self.gameWidget = guilt.newUserWidget()
+  horizontalWidget:setChild(2, 1, self.gameWidget)
+
+  self.gameWidget.callbacks.draw = function(x, y)
+    love.graphics.push()
+    love.graphics.reset()
+
+    local viewportX, viewportY, viewportWidth, viewportHeight = self.gameWidget:getBounds()
+    love.graphics.setScissor(x + viewportX, y + viewportY, viewportWidth, viewportHeight)
+    self.game:setViewport(x + viewportX, y + viewportY, viewportWidth, viewportHeight)
+    self.game:draw()
+    love.graphics.setScissor()
+
+    love.graphics.pop()
+  end
 end
 
 function Editor:destroy()
 end
 
 function Editor:update(dt)
+  self.game:update(dt)
+
   if self.entityView then
     self.entityView:update(dt)
   end
 
   local width, height = love.graphics.getDimensions()
 
-  self.rootWidget:measure()
-  self.rootWidget:arrange(0, 0, width, height)
+  self.rootWidget:getTargetDimensions()
+  self.rootWidget:setBounds(0, 0, width, height)
 end
 
 function Editor:draw()

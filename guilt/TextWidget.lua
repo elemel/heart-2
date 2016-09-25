@@ -10,6 +10,7 @@ end
 function TextWidget:init()
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
+
   self.contentWidth, self.contentHeight = 0, 0
   self.alignmentX, self.alignmentY = 0, 0
   self.dirty = false
@@ -87,7 +88,7 @@ function TextWidget:setBackgroundColor(color)
   self.backgroundColor = color
 end
 
-function TextWidget:measure()
+function TextWidget:getTargetDimensions()
   if self.text and self.font then
     self.contentWidth = self.font:getWidth(self.text)
     self.contentHeight = self.font:getHeight()
@@ -98,7 +99,7 @@ function TextWidget:measure()
   return self.contentWidth, self.contentHeight
 end
 
-function TextWidget:arrange(x, y, width, height)
+function TextWidget:setBounds(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
   self.dirty = false
@@ -123,6 +124,14 @@ function TextWidget:mousepressed(x, y, button, istouch)
   end
 
   return false
+end
+
+function TextWidget:getCallback(name)
+  return self.callbacks[name]
+end
+
+function TextWidget:setCallback(name, callback)
+  self.callbacks[name] = callback
 end
 
 return TextWidget

@@ -177,12 +177,10 @@ function love.load()
 end
 
 function love.update(dt)
-  game:update(dt)
   editor:update(dt)
 end
 
 function love.draw()
-  game:draw()
   editor:draw()
 end
 

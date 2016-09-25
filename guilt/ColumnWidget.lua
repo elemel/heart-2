@@ -17,6 +17,7 @@ function ColumnWidget:init()
   self.childWidths, self.childHeights = {}, {}
 
   self.dirty = false
+  self.callbacks = {}
 end
 
 function ColumnWidget:destroy()
@@ -77,12 +78,12 @@ function ColumnWidget:setBackgroundColor(color)
   self.backgroundColor = color
 end
 
-function ColumnWidget:measure()
+function ColumnWidget:getTargetDimensions()
   local contentWidth, contentHeight = 0, 0
   local widths, heights = self.childWidths, self.childHeights
 
   for i, child in ipairs(self.children) do
-    widths[i], heights[i] = child:measure()
+    widths[i], heights[i] = child:getTargetDimensions()
 
     contentWidth = math.max(contentWidth, widths[i])
     contentHeight = contentHeight + heights[i]
@@ -91,7 +92,7 @@ function ColumnWidget:measure()
   return contentWidth, contentHeight
 end
 
-function ColumnWidget:arrange(x, y, width, height)
+function ColumnWidget:setBounds(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
@@ -99,7 +100,7 @@ function ColumnWidget:arrange(x, y, width, height)
   local childY = 0
 
   for i, child in ipairs(self.children) do
-    child:arrange(0, childY, width, heights[i])
+    child:setBounds(0, childY, width, heights[i])
     childY = childY + heights[i]
   end
 
@@ -132,6 +133,14 @@ function ColumnWidget:mousepressed(x, y, button, istouch)
   end
 
   return false
+end
+
+function ColumnWidget:getCallback(name)
+  return self.callbacks[name]
+end
+
+function ColumnWidget:setCallback(name, callback)
+  self.callbacks[name] = callback
 end
 
 return ColumnWidget

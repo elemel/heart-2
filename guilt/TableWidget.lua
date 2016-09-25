@@ -20,6 +20,7 @@ function TableWidget:init(columnCount, rowCount)
   self.normalizedColumnWeights, self.normalizedRowWeights = {}, {}
   self.dirty = false
   self.weightsDirty = false
+  self.callbacks = {}
 end
 
 function TableWidget:destroy()
@@ -102,7 +103,7 @@ function TableWidget:setChild(columnIndex, rowIndex, child)
   self:setDirty(true)
 end
 
-function TableWidget:measure()
+function TableWidget:getTargetDimensions()
   for i = 1, self.columnCount do
     self.columnWidths[i] = 0
   end
@@ -116,7 +117,7 @@ function TableWidget:measure()
       local child = common.get2(self.children, i, j)
 
       if child then
-        local childWidth, childHeight = child:measure()
+        local childWidth, childHeight = child:getTargetDimensions()
 
         self.columnWidths[i] = math.max(self.columnWidths[i], childWidth)
         self.rowHeights[j] = math.max(self.rowHeights[j], childHeight)
@@ -137,7 +138,7 @@ function TableWidget:measure()
   return self.contentWidth, self.contentHeight
 end
 
-function TableWidget:arrange(x, y, width, height)
+function TableWidget:setBounds(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
@@ -165,7 +166,7 @@ function TableWidget:arrange(x, y, width, height)
       local child = common.get2(self.children, i, j)
 
       if child then
-        child:arrange(childX, childY, self.columnWidths[i], self.rowHeights[j])
+        child:setBounds(childX, childY, self.columnWidths[i], self.rowHeights[j])
       end
 
       childY = childY + self.rowHeights[j]
@@ -236,6 +237,14 @@ function TableWidget:normalizeWeights2(source, target, count)
   for i = 1, count do
     target[i] = offset + scale * math.max(source[i] or 0, 0)
   end
+end
+
+function TableWidget:getCallback(name)
+  return self.callbacks[name]
+end
+
+function TableWidget:setCallback(name, callback)
+  self.callbacks[name] = callback
 end
 
 return TableWidget

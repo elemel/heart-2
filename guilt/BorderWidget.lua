@@ -98,9 +98,9 @@ function BorderWidget:setBackgroundColor(color)
   self.backgroundColor = color
 end
 
-function BorderWidget:measure()
+function BorderWidget:getTargetDimensions()
   if self.child then
-    self.contentWidth, self.contentHeight = self.child:measure()
+    self.contentWidth, self.contentHeight = self.child:getTargetDimensions()
   else
     self.contentWidth, self.contentHeight = 0, 0
   end
@@ -109,12 +109,12 @@ function BorderWidget:measure()
     self.topBorder + self.contentHeight + self.bottomBorder
 end
 
-function BorderWidget:arrange(x, y, width, height)
+function BorderWidget:setBounds(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
   if self.child then
-    self.child:arrange(self.leftBorder, self.topBorder,
+    self.child:setBounds(self.leftBorder, self.topBorder,
       self.width - self.leftBorder - self.rightBorder,
       self.height - self.topBorder - self.bottomBorder)
   end
@@ -139,6 +139,14 @@ function BorderWidget:mousepressed(x, y, button, istouch)
   end
 
   return false
+end
+
+function BorderWidget:getCallback(name)
+  return self.callbacks[name]
+end
+
+function BorderWidget:setCallback(name, callback)
+  self.callbacks[name] = callback
 end
 
 return BorderWidget

@@ -64,12 +64,12 @@ function RowWidget:setBackgroundColor(color)
   self.backgroundColor = color
 end
 
-function RowWidget:measure()
+function RowWidget:getTargetDimensions()
   local contentWidth, contentHeight = 0, 0
   local widths, heights = self.childWidths, self.childHeights
 
   for i, child in ipairs(self.children) do
-    widths[i], heights[i] = child:measure()
+    widths[i], heights[i] = child:getTargetDimensions()
 
     contentWidth = contentWidth + widths[i]
     contentHeight = math.max(contentHeight, heights[i])
@@ -78,7 +78,7 @@ function RowWidget:measure()
   return contentWidth, contentHeight
 end
 
-function RowWidget:arrange(x, y, width, height)
+function RowWidget:setBounds(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
@@ -86,11 +86,12 @@ function RowWidget:arrange(x, y, width, height)
   local childX = 0
 
   for i, child in ipairs(self.children) do
-    child:arrange(childX, 0, widths[i], height)
+    child:setBounds(childX, 0, widths[i], height)
     childX = childX + widths[i]
   end
 
   self.dirty = false
+  self.callbacks = {}
 end
 
 function RowWidget:draw(x, y)
@@ -119,6 +120,14 @@ function RowWidget:mousepressed(x, y, button, istouch)
   end
 
   return false
+end
+
+function RowWidget:getCallback(name)
+  return self.callbacks[name]
+end
+
+function RowWidget:setCallback(name, callback)
+  self.callbacks[name] = callback
 end
 
 return RowWidget
