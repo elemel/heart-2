@@ -34,6 +34,7 @@ function BoneComponentView:init(component, parentWidget)
     local valueWidget = guilt.newTextWidget()
     valueWidget:setFont(love.graphics:getFont())
     valueWidget:setColor({255, 255, 255, 255})
+    valueWidget:setTargetDimensions(100, nil)
     propertyListWidget:addChild(valueWidget)
 
     self.propertyValueWidgets[name] = valueWidget

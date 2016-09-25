@@ -8,6 +8,8 @@ function BorderWidget.new()
 end
 
 function BorderWidget:init()
+  self.targetWidth, self.targetHeight = 0, 0
+
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
 
@@ -16,13 +18,8 @@ function BorderWidget:init()
   self.rightBorder = 0
   self.bottomBorder = 0
 
-  self.contentWidth, self.contentHeight = 0, 0
   self.dirty = false
   self.callbacks = {}
-end
-
-function BorderWidget:getBounds()
-  return self.x, self.y, self.width, self.height
 end
 
 function BorderWidget:isDirty()
@@ -99,14 +96,20 @@ function BorderWidget:setBackgroundColor(color)
 end
 
 function BorderWidget:getTargetDimensions()
+  local childWidth, childHeight = 0, 0
+
   if self.child then
-    self.contentWidth, self.contentHeight = self.child:getTargetDimensions()
-  else
-    self.contentWidth, self.contentHeight = 0, 0
+    childWidth, childHeight = self.child:getTargetDimensions()
   end
 
-  return self.leftBorder + self.contentWidth + self.rightBorder,
-    self.topBorder + self.contentHeight + self.bottomBorder
+  self.targetWidth = self.leftBorder + childWidth + self.rightBorder
+  self.targetHeight = self.topBorder + childHeight + self.bottomBorder
+
+  return self.targetWidth, self.targetHeight
+end
+
+function BorderWidget:getBounds()
+  return self.x, self.y, self.width, self.height
 end
 
 function BorderWidget:setBounds(x, y, width, height)

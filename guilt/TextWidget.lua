@@ -11,7 +11,6 @@ function TextWidget:init()
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
 
-  self.contentWidth, self.contentHeight = 0, 0
   self.alignmentX, self.alignmentY = 0, 0
   self.dirty = false
   self.callbacks = {}
@@ -89,14 +88,25 @@ function TextWidget:setBackgroundColor(color)
 end
 
 function TextWidget:getTargetDimensions()
-  if self.text and self.font then
-    self.contentWidth = self.font:getWidth(self.text)
-    self.contentHeight = self.font:getHeight()
-  else
-    self.contentWidth, self.contentHeight = 0, 0
+  if self.targetWidth and self.targetHeight then
+    return self.targetWidth, self.targetHeight
   end
 
-  return self.contentWidth, self.contentHeight
+  local textWidth, textHeight = 0, 0
+
+  if self.text and self.font then
+    textWidth = self.font:getWidth(self.text)
+  end
+
+  if self.font then
+    textHeight = self.font:getHeight()
+  end
+
+  return self.targetWidth or textWidth, self.targetHeight or textHeight
+end
+
+function TextWidget:setTargetDimensions(width, height)
+  self.targetWidth, self.targetHeight = width, height
 end
 
 function TextWidget:setBounds(x, y, width, height)

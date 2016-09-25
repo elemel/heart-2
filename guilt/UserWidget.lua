@@ -8,9 +8,11 @@ function UserWidget.new()
 end
 
 function UserWidget:init()
+  self.targetWidth, self.targetHeight = 0, 0
+
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
-  self.targetWidth, self.targetHeight = 0, 0
+
   self.dirty = false
   self.callbacks = {}
 end

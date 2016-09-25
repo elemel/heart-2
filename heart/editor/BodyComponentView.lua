@@ -40,6 +40,7 @@ function BodyComponentView:init(component, parentWidget)
     local valueWidget = guilt.newTextWidget()
     valueWidget:setFont(love.graphics:getFont())
     valueWidget:setColor({255, 255, 255, 255})
+    valueWidget:setTargetDimensions(100, nil)
     tableWidget:setChild(2, i, valueWidget)
 
     self.propertyValueWidgets[name] = valueWidget
