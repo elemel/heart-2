@@ -68,4 +68,12 @@ function UserWidget:setCallback(name, callback)
   self.callbacks[name] = callback
 end
 
+function UserWidget:mousepressed(x, y, button, istouch)
+  if self.callbacks.mousepressed then
+    return self.callbacks.mousepressed(x, y, button, istouch)
+  end
+
+  return false
+end
+
 return UserWidget
