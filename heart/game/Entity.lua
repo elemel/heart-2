@@ -51,6 +51,8 @@ function Entity:destroy()
     self.components = nil
   end
 
+  self:setParent(nil)
+
   if self.game then
     self.game:removeEntity(self)
     self.game = nil

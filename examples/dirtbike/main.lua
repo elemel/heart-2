@@ -5,7 +5,7 @@ function love.load()
   love.window.setMode(800, 600, {
     fullscreentype = "desktop",
     resizable = true,
-    -- highdpi = true,
+    highdpi = true,
   })
 
   love.physics.setMeter(1)
@@ -185,5 +185,5 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button, istouch)
-  editor:mousepressed(x, y, button, istouch)
+  editor.gui:mousepressed(x, y, button, istouch)
 end

@@ -5,45 +5,51 @@ local guilt = require("guilt")
 local EntityView = {}
 EntityView.__index = EntityView
 
-function EntityView.new(entity, parentWidget)
+function EntityView.new(editor, parentWidget)
   local view = setmetatable({}, EntityView)
-  view:init(entity, parentWidget)
+  view:init(editor, parentWidget)
   return view
 end
 
-function EntityView:init(entity, parentWidget)
-  self.entity = assert(entity)
+function EntityView:init(editor, parentWidget)
+  self.editor = assert(editor)
+  self.widget = guilt.newScrollWidget(editor.gui, parentWidget, {
+    minWidth = 400, maxWidth = 400,
+  })
 
-  self.widget = guilt.newColumnWidget()
-  self.widget:setBackgroundColor({127, 127, 0, 127})
-  parentWidget:setChild(3, 1, self.widget)
+  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
+    direction = "down",
+  })
 
-  if entity:getComponent("bone") then
-    local boneComponent = entity:getComponent("bone")
-    self.boneComponentView = BoneComponentView.new(boneComponent, self.widget)
-  end
+  local borderWidget = guilt.newBorderWidget(editor.gui, listWidget, {
+    border = 12,
+  })
 
-  if entity:getComponent("body") then
-    local bodyComponent = entity:getComponent("body")
-    self.bodyComponentView = BodyComponentView.new(bodyComponent, self.widget)
-  end
+  self.entityNameWidget = guilt.newTextWidget(editor.gui, borderWidget, {
+    alignmentX = 0,
+  })
+
+  self.boneComponentView = BoneComponentView.new(editor, listWidget)
+  self.bodyComponentView = BodyComponentView.new(editor, listWidget)
 end
 
 function EntityView:destroy()
+  self.bodyComponentView:destroy()
+  self.boneComponentView:destroy()
+
   if self.widget then
     self.widget:destroy()
     self.widget = nil
   end
+
+  self.editor = nil
 end
 
 function EntityView:update(dt)
-  if self.bodyComponentView then
-    self.bodyComponentView:update(dt)
-  end
-
-  if self.boneComponentView then
-    self.boneComponentView:update(dt)
-  end
+  local entity = next(self.editor:getSelection())
+  self.entityNameWidget:setText(entity and "uuid = " .. entity:getUuid() or "")
+  self.bodyComponentView:update(dt)
+  self.boneComponentView:update(dt)
 end
 
 return EntityView

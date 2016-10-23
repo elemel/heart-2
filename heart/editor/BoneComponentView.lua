@@ -3,51 +3,51 @@ local guilt = require("guilt")
 local BoneComponentView = {}
 BoneComponentView.__index = BoneComponentView
 
-function BoneComponentView.new(component, parentWidget)
+function BoneComponentView.new(editor, parentWidget)
   local view = setmetatable({}, BoneComponentView)
-  view:init(component, parentWidget)
+  view:init(editor, parentWidget)
   return view
 end
 
-function BoneComponentView:init(component, parentWidget)
-  self.component = component
+function BoneComponentView:init(editor, parentWidget)
+  self.editor = assert(editor)
 
-  local propertyListWidget = guilt.newColumnWidget()
-  propertyListWidget:setBackgroundColor({127, 0, 127, 127})
-  parentWidget:addChild(propertyListWidget)
+  self.widget = guilt.newBorderWidget(editor.gui, parentWidget, {
+    border = 12,
+  })
 
-  local titleWidget = guilt.newTextWidget()
-  titleWidget:setText("bone")
-  titleWidget:setFont(love.graphics:getFont())
-  titleWidget:setColor({255, 255, 255, 255})
-  propertyListWidget:addChild(titleWidget)
+  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
+    direction = "down",
+  })
 
-  self.propertyValueWidgets = {}
+  guilt.newTextWidget(editor.gui, listWidget, {
+    text = "boneComponent",
+    alignmentX = 0,
+  })
+
+  self.propertyWidgets = {}
 
   for i, name in ipairs({"x", "y", "angle"}) do
-    local nameWidget = guilt.newTextWidget()
-    nameWidget:setText(name)
-    nameWidget:setFont(love.graphics:getFont())
-    nameWidget:setColor({255, 255, 255, 255})
-    propertyListWidget:addChild(nameWidget)
-
-    local valueWidget = guilt.newTextWidget()
-    valueWidget:setFont(love.graphics:getFont())
-    valueWidget:setColor({255, 255, 255, 255})
-    valueWidget:setTargetDimensions(100, nil)
-    propertyListWidget:addChild(valueWidget)
-
-    self.propertyValueWidgets[name] = valueWidget
+    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, listWidget, {
+      alignmentX = 0,
+    })
   end
 end
 
 function BoneComponentView:update(dt)
-  local x, y = self.component:getPosition()
-  local angle = self.component:getAngle()
+  local entity = next(self.editor:getSelection())
+  local component = entity and entity:getComponent("bone")
 
-  self.propertyValueWidgets.x:setText(string.format("%g", x))
-  self.propertyValueWidgets.y:setText(string.format("%g", y))
-  self.propertyValueWidgets.angle:setText(string.format("%g", angle))
+  if not component then
+    return
+  end
+
+  local x, y = component:getPosition()
+  local angle = component:getAngle()
+
+  self.propertyWidgets.x:setText(string.format("x = %.3f", x + 1e-6))
+  self.propertyWidgets.y:setText(string.format("y = %.3f", y + 1e-6))
+  self.propertyWidgets.angle:setText(string.format("angle = %.3f", angle + 1e-6))
 end
 
 return BoneComponentView

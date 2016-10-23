@@ -1,39 +1,51 @@
 local TextWidget = {}
 TextWidget.__index = TextWidget
 
-function TextWidget.new()
+function TextWidget.new(gui, parent, config)
   local widget = setmetatable({}, TextWidget)
-  widget:init()
+  widget:init(gui, parent, config)
   return widget
 end
 
-function TextWidget:init()
+function TextWidget:init(gui, parent, config)
+  self.gui = assert(gui)
+  self:setParent(parent)
+
+  self.text = config.text or ""
+  self.color = config.color or {255, 255, 255, 255}
+  self.backgroundColor = config.backgroundColor or nil
+  self.weight = config.weight or 0
+
+  self.alignmentX = config.alignmentX or 0.5
+  self.alignmentY = config.alignmentY or 0.5
+
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
+  self.measuredWidth, self.measuredHeight = 0, 0
+  self.normalizedWeight = 0, 0
 
-  self.alignmentX, self.alignmentY = 0, 0
-  self.dirty = false
   self.callbacks = {}
 end
 
-function TextWidget:getBounds()
-  return self.x, self.y, self.width, self.height
+function TextWidget:destroy()
+  self:setParent(nil)
+  self.gui = nil
 end
 
-function TextWidget:isDirty()
-  return self.dirty
+function TextWidget:getParent()
+  return self.parent
 end
 
-function TextWidget:setDirty(dirty)
-  assert(type(dirty) == "boolean")
+function TextWidget:setParent(parent)
+  if parent ~= self.parent then
+    if self.parent then
+      self.parent:removeChild(self)
+    end
 
-  if dirty ~= self.dirty then
-    if dirty then
-      self.dirty = true
+    self.parent = parent
 
-      if self.parent then
-        self.parent:setDirty(true)
-      end
+    if self.parent then
+      self.parent:addChild(self)
     end
   end
 end
@@ -43,10 +55,7 @@ function TextWidget:getText()
 end
 
 function TextWidget:setText(text)
-  if text ~= self.text then
-    self.text = text
-    self:setDirty(true)
-  end
+  self.text = text
 end
 
 function TextWidget:getFont()
@@ -54,21 +63,7 @@ function TextWidget:getFont()
 end 
 
 function TextWidget:setFont(font)
-  if font ~= self.font then
-    self.font = font
-    self:setDirty(true)
-  end
-end
-
-function TextWidget:getAlignment()
-  return self.alignmentX, self.alignmentY
-end
-
-function TextWidget:setAlignment(alignmentX, alignmentY)
-  if alignmentX ~= self.alignmentX or alignmentY ~= self.alignmentY then
-    self.alignmentX, self.alignmentY = alignmentX, alignmentY
-    self:setDirty(true)
-  end
+  self.font = font
 end
 
 function TextWidget:getColor()
@@ -87,53 +82,16 @@ function TextWidget:setBackgroundColor(color)
   self.backgroundColor = color
 end
 
-function TextWidget:getTargetDimensions()
-  if self.targetWidth and self.targetHeight then
-    return self.targetWidth, self.targetHeight
-  end
-
-  local textWidth, textHeight = 0, 0
-
-  if self.text and self.font then
-    textWidth = self.font:getWidth(self.text)
-  end
-
-  if self.font then
-    textHeight = self.font:getHeight()
-  end
-
-  return self.targetWidth or textWidth, self.targetHeight or textHeight
+function TextWidget:getBounds()
+  return self.x, self.y, self.width, self.height
 end
 
-function TextWidget:setTargetDimensions(width, height)
-  self.targetWidth, self.targetHeight = width, height
+function TextWidget:getWeight()
+  return self.weight
 end
 
-function TextWidget:setBounds(x, y, width, height)
-  self.x, self.y = x, y
-  self.width, self.height = width, height
-  self.dirty = false
-end
-
-function TextWidget:draw(x, y)
-  if self.backgroundColor then
-    love.graphics.setColor(self.backgroundColor)
-    love.graphics.rectangle("fill", x + self.x, y + self.y, self.width, self.height)
-  end
-
-  if self.text and self.font and self.color then
-    love.graphics.setColor(self.color)
-    love.graphics.setFont(self.font)
-    love.graphics.print(self.text, x + self.x, y + self.y)
-  end
-end
-
-function TextWidget:mousepressed(x, y, button, istouch)
-  if self.callbacks.mousepressed then
-    return self.callbacks.mousepressed(x, y, button, istouch)
-  end
-
-  return false
+function TextWidget:setWeight(weight)
+  self.weight = weight
 end
 
 function TextWidget:getCallback(name)
@@ -142,6 +100,41 @@ end
 
 function TextWidget:setCallback(name, callback)
   self.callbacks[name] = callback
+end
+
+function TextWidget:measure()
+  local font = self.font or self.gui:getFont()
+
+  self.measuredWidth = font:getWidth(self.text)
+  self.measuredHeight = font:getHeight()
+
+  return self.measuredWidth, self.measuredHeight
+end
+
+function TextWidget:arrange(x, y, width, height)
+  self.x, self.y = x, y
+  self.width, self.height = width, height
+end
+
+function TextWidget:draw(x, y)
+  if self.backgroundColor then
+    love.graphics.setColor(self.backgroundColor)
+    love.graphics.rectangle("fill", x + self.x, y + self.y, self.width, self.height)
+  end
+
+  if self.text and self.color then
+    local font = self.font or self.gui:getFont()
+
+    local extraWidth = self.width - self.measuredWidth
+    local extraHeight = self.height - self.measuredHeight
+
+    local textX = math.floor(x + self.x + self.alignmentX * extraWidth + 0.5)
+    local textY = math.floor(y + self.y + self.alignmentY * extraHeight + 0.5)
+
+    love.graphics.setColor(self.color)
+    love.graphics.setFont(font)
+    love.graphics.print(self.text, textX, textY)
+  end
 end
 
 return TextWidget

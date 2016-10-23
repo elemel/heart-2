@@ -4,38 +4,36 @@ local EntityView = require("heart.editor.EntityView")
 local EntityTreeView = {}
 EntityTreeView.__index = EntityTreeView
 
-function EntityTreeView.new(editor, game, parentWidget, columnIndex, rowIndex)
+function EntityTreeView.new(editor, parentWidget)
   local view = setmetatable({}, EntityTreeView)
-  view:init(editor, game, parentWidget, columnIndex, rowIndex)
+  view:init(editor, parentWidget)
   return view
 end
 
-function EntityTreeView:init(editor, game, parentWidget, columnIndex, rowIndex)
+function EntityTreeView:init(editor, parentWidget)
   self.editor = assert(editor)
-  self.game = assert(game)
+  self.game = assert(editor.game)
   self.parentWidget = assert(parentWidget)
 
-  self.widget = guilt.newColumnWidget()
-  self.widget:setBackgroundColor({0, 127, 127, 127})
-  parentWidget:setChild(columnIndex, rowIndex, self.widget)
+  self.widget = guilt.newListWidget(self.editor.gui, self.parentWidget, {
+    direction = "down",
+  })
 
   for i, entity in ipairs(self.game.entities) do
-    local textWidget = guilt.newTextWidget()
-    textWidget:setText(entity:getUuid())
-    textWidget:setFont(love.graphics:getFont())
-    textWidget:setColor({255, 255, 255, 255})
-    self.widget:addChild(textWidget)
+    local textWidget = guilt.newTextWidget(self.editor.gui, self.widget, {
+      text = entity:getUuid(),
+      alignmentX = 0,
+    })
 
     textWidget.callbacks.mousepressed = function(x, y, button, istouch)
-      if self.editor.entityView then
-        self.editor.entityView:destroy()
-        self.editor.entityView = nil
-      end
-
-      self.editor.entityView = EntityView.new(entity, self.parentWidget)
+      self.editor:deselectAll()
+      self.editor:select(entity)
       return true
     end
   end
+end
+
+function EntityTreeView:update(dt)
 end
 
 return EntityTreeView

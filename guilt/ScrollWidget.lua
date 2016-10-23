@@ -1,135 +1,92 @@
 local ScrollWidget = {}
 ScrollWidget.__index = ScrollWidget
 
-function ScrollWidget.new()
+function ScrollWidget.new(gui, parent, config)
   local widget = setmetatable({}, ScrollWidget)
-  widget:init()
+  widget:init(gui, parent, config)
   return widget
 end
 
-function ScrollWidget:init()
-  self.targetWidth, self.targetHeight = 0, 0
+function ScrollWidget:init(gui, parent, config)
+  self.gui = assert(gui)
+  self:setParent(parent)
+
+  self.weight = config.weight or 0
+
+  self.minWidth, self.minHeight = config.minWidth, config.minHeight
+  self.maxWidth, self.maxHeight = config.maxWidth, config.maxHeight
 
   self.x, self.y = 0, 0
   self.width, self.height = 0, 0
+  self.measuredWidth, self.measuredHeight = 0, 0
+  self.normalizedWeight = 0
 
-  self.dirty = false
+  self.children = {}
   self.callbacks = {}
 end
 
-function ScrollWidget:isDirty()
-  return self.dirty
+function ScrollWidget:destroy()
+  self:setParent(nil)
+  self.gui = nil
 end
 
-function ScrollWidget:setDirty(dirty)
-  assert(type(dirty) == "boolean")
+function ScrollWidget:getParent()
+  return self.parent
+end
 
-  if dirty ~= self.dirty then
-    if dirty then
-      self.dirty = true
+function ScrollWidget:setParent(parent)
+  if parent ~= self.parent then
+    if self.parent then
+      self.parent:removeChild(self)
+    end
 
-      if self.parent then
-        self.parent:setDirty(true)
-      end
+    self.parent = parent
+
+    if self.parent then
+      self.parent:addChild(self)
     end
   end
 end
 
-function ScrollWidget:getChild()
-  return self.child
+function ScrollWidget:addChild(child)
+  table.insert(self.children, child)
 end
 
-function ScrollWidget:setChild(child)
-  if self.child then
-    self.child.parent = nil
-  end
+function ScrollWidget:removeChild(child)
+  for i = #self.children, 1, -1 do
+    local sibling = self.children[i]
 
-  self.child = child
-
-  if self.child then
-    self.child.parent = self
-  end
-
-  self:setDirty(true)
-end
-
-function ScrollWidget:getScrolls()
-  return self.minWidth, self.minHeight, self.maxWidth, self.maxHeight
-end
-
-function ScrollWidget:setScrolls(minWidth, minHeight, maxWidth, maxHeight)
-  if minWidth ~= self.minWidth or minHeight ~= self.minHeight or
-      maxWidth ~= self.maxWidth or maxHeight ~= self.maxHeight then
-    self.minWidth = minWidth
-    self.minHeight = minHeight
-    self.maxWidth = maxWidth
-    self.maxHeight = maxHeight
-
-    self:setDirty(true)
+    if sibling == child then
+      table.remove(self.children, i)
+      break
+    end
   end
 end
 
-function ScrollWidget:getBackgroundColor()
-  return self.backgroundColor
+function ScrollWidget:getWeight()
+  return self.weight
 end
 
-function ScrollWidget:setBackgroundColor(color)
-  self.backgroundColor = color
+function ScrollWidget:setWeight(weight)
+  self.weight = weight
 end
 
-function ScrollWidget:getTargetDimensions()
-  if self.targetWidth and self.targetHeight then
-    return self.targetWidth, self.targetHeight
-  end
-
-  local childWidth, childHeight = 0, 0
-
-  if self.child then
-    childWidth, childHeight = self.child:getTargetDimensions()
-  end
-
-  return self.targetWidth or childWidth, self.targetHeight or childHeight
+function ScrollWidget:getMinDimensions()
+  return self.minWidth, self.minHeight
 end
 
-function ScrollWidget:setTargetDimensions(width, height)
-  if width ~= self.targetWidth or height ~= self.targetHeight then
-    self.targetWidth, self.targetHeight = width, height
-    self:setDirty(true)
-  end
+function ScrollWidget:setMinDimensions(width, height)
+  self.minWidth = width
+  self.minHeight = height
 end
 
-function ScrollWidget:getBounds()
-  return self.x, self.y, self.width, self.height
+function ScrollWidget:getMaxDimensions()
+  return self.maxWidth, self.maxHeight
 end
 
-function ScrollWidget:setBounds(x, y, width, height)
-  self.x, self.y = x, y
-  self.width, self.height = width, height
-
-  if self.child then
-    self.child:setBounds(0, 0, width, height)
-  end
-
-  self.dirty = false
-end
-
-function ScrollWidget:draw(x, y)
-  if self.backgroundColor then
-    love.graphics.setColor(self.backgroundColor)
-    love.graphics.rectangle("fill", x + self.x, y + self.y, self.width, self.height)
-  end
-
-  if self.child then
-    self.child:draw(x + self.x, y + self.y)
-  end
-end
-
-function ScrollWidget:mousepressed(x, y, button, istouch)
-  if self.child then
-    return self.child:mousepressed(x - self.x, y - self.y, button, istouch)
-  end
-
-  return false
+function ScrollWidget:setMaxDimensions(width, height)
+  self.maxWidth = width
+  self.maxHeight = height
 end
 
 function ScrollWidget:getCallback(name)
@@ -138,6 +95,64 @@ end
 
 function ScrollWidget:setCallback(name, callback)
   self.callbacks[name] = callback
+end
+
+function ScrollWidget:measure()
+  self.measuredWidth, self.measuredHeight = 0, 0
+
+  for i, child in ipairs(self.children) do
+    local width, height = child:measure()
+
+    self.measuredWidth = math.max(self.measuredWidth, width)
+    self.measuredHeight = math.max(self.measuredHeight, height)
+  end
+
+  if self.minWidth then
+    self.measuredWidth = math.max(self.measuredWidth, self.minWidth)
+  end
+
+  if self.minHeight then
+    self.measuredHeight = math.max(self.measuredHeight, self.minHeight)
+  end
+
+  if self.maxWidth then
+    self.measuredWidth = math.min(self.measuredWidth, self.maxWidth)
+  end
+
+  if self.maxHeight then
+    self.measuredHeight = math.min(self.measuredHeight, self.maxHeight)
+  end
+
+  return self.measuredWidth, self.measuredHeight
+end
+
+function ScrollWidget:arrange(x, y, width, height)
+  self.x, self.y = x, y
+  self.width, self.height = width, height
+
+  local child = self.children[1]
+
+  if child then
+    child:arrange(0, 0, child.measuredWidth, child.measuredHeight)
+  end
+end
+
+function ScrollWidget:draw(x, y)
+  local scissorX, scissorY, scissorWidth, scissorHeight = love.graphics.getScissor()
+  love.graphics.intersectScissor(x + self.x, y + self.y, self.width, self.height)
+
+  if self.backgroundColor then
+    love.graphics.setColor(self.backgroundColor)
+    love.graphics.rectangle("fill", x + self.x, y + self.y, self.width, self.height)
+  end
+
+  local child = self.children[1]
+
+  if child then
+    child:draw(x + self.x, y + self.y)
+  end
+
+  love.graphics.setScissor(scissorX, scissorY, scissorWidth, scissorHeight)
 end
 
 return ScrollWidget

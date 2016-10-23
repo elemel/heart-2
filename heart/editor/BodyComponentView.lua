@@ -3,57 +3,57 @@ local guilt = require("guilt")
 local BodyComponentView = {}
 BodyComponentView.__index = BodyComponentView
 
-function BodyComponentView.new(component, parentWidget)
+function BodyComponentView.new(editor, parentWidget)
   local view = setmetatable({}, BodyComponentView)
-  view:init(component, parentWidget)
+  view:init(editor, parentWidget)
   return view
 end
 
-function BodyComponentView:init(component, parentWidget)
-  self.component = component
+function BodyComponentView:init(editor, parentWidget)
+  self.editor = assert(editor)
 
-  local tableWidget = guilt.newTableWidget()
-  parentWidget:addChild(tableWidget)
+  self.widget = guilt.newBorderWidget(editor.gui, parentWidget, {
+    border = 12,
+  })
 
-  local propertyListWidget = guilt.newColumnWidget()
-  propertyListWidget:setBackgroundColor({127, 0, 127, 127})
-  parentWidget:addChild(propertyListWidget)
+  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
+    direction = "down",
+  })
 
-  local titleWidget = guilt.newTextWidget()
-  titleWidget:setText("body")
-  titleWidget:setFont(love.graphics:getFont())
-  titleWidget:setColor({255, 255, 255, 255})
-  propertyListWidget:addChild(titleWidget)
+  guilt.newTextWidget(editor.gui, listWidget, {
+    text = "bodyComponent",
+    alignmentX = 0,
+  })
 
-  self.propertyValueWidgets = {}
+  self.propertyWidgets = {}
 
-  tableWidget:setColumnCount(2)
-  tableWidget:setRowCount(3)
-
-  for i, name in ipairs({"x", "y", "angle"}) do
-    local nameWidget = guilt.newTextWidget()
-    nameWidget:setText(name)
-    nameWidget:setFont(love.graphics:getFont())
-    nameWidget:setColor({255, 255, 255, 255})
-    tableWidget:setChild(1, i, nameWidget)
-
-    local valueWidget = guilt.newTextWidget()
-    valueWidget:setFont(love.graphics:getFont())
-    valueWidget:setColor({255, 255, 255, 255})
-    valueWidget:setTargetDimensions(100, nil)
-    tableWidget:setChild(2, i, valueWidget)
-
-    self.propertyValueWidgets[name] = valueWidget
+  for i, name in ipairs({"x", "y", "angle", "velocityX", "velocityY", "angularVelocity"}) do
+    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, listWidget, {
+      alignmentX = 0,
+    })
   end
 end
 
 function BodyComponentView:update(dt)
-  local x, y = self.component:getBody():getPosition()
-  local angle = self.component:getBody():getAngle()
+  local entity = next(self.editor:getSelection())
+  local component = entity and entity:getComponent("body")
 
-  self.propertyValueWidgets.x:setText(string.format("%g", x))
-  self.propertyValueWidgets.y:setText(string.format("%g", y))
-  self.propertyValueWidgets.angle:setText(string.format("%g", angle))
+  if not component then
+    return
+  end
+
+  local body = component:getBody()
+  local x, y = body:getPosition()
+  local angle = body:getAngle()
+  local velocityX, velocityY = body:getLinearVelocity()
+  local angularVelocity = body:getAngularVelocity()
+
+  self.propertyWidgets.x:setText(string.format("x = %.3f", x + 1e-6))
+  self.propertyWidgets.y:setText(string.format("y = %.3f", y + 1e-6))
+  self.propertyWidgets.angle:setText(string.format("angle = %.3f", angle + 1e-6))
+  self.propertyWidgets.velocityX:setText(string.format("velocityX = %.3f", velocityX + 1e-6))
+  self.propertyWidgets.velocityY:setText(string.format("velocityY = %.3f", velocityY + 1e-6))
+  self.propertyWidgets.angularVelocity:setText(string.format("angularVelocity = %.3f", angularVelocity + 1e-6))
 end
 
 return BodyComponentView

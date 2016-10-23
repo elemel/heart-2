@@ -1,6 +1,7 @@
-local EntityView = require("heart.editor.EntityView")
-local EntityTreeView = require("heart.editor.EntityTreeView")
 local guilt = require("guilt")
+local EntityTreeView = require("heart.editor.EntityTreeView")
+local EntityView = require("heart.editor.EntityView")
+local DefaultController = require("heart.editor.DefaultController")
 
 local Editor = {}
 Editor.__index = Editor
@@ -13,71 +14,71 @@ end
 
 function Editor:init(game)
   self.game = assert(game)
+  self.selection = {}
+  self.font = love.graphics.newFont(24)
+  self.gui = guilt.newGui()
+  self.gui:setFont(self.font)
 
-  self.rootWidget = guilt.newTableWidget(1, 3)
-  self.rootWidget:setRowWeight(2, 1)
-  self.rootWidget:setBackgroundColor({127, 0, 0, 127})
+  local rootWidget = guilt.newListWidget(self.gui, nil, {
+    direction = "right",
+  })
 
-  local systemListWidget = guilt.newRowWidget()
-  systemListWidget:setBackgroundColor({0, 127, 0, 127})
-  self.rootWidget:setChild(1, 1, systemListWidget)
+  self.gui:setRootWidget(rootWidget)
 
-  local horizontalWidget = guilt.newTableWidget(3, 1)
-  horizontalWidget:setColumnWeight(2, 1)
-  self.rootWidget:setChild(1, 2, horizontalWidget)
+  local entityTreeScrollWidget = guilt.newScrollWidget(self.gui, self.gui.rootWidget, {})
+  self.entityTreeView = EntityTreeView.new(self, entityTreeScrollWidget)
 
-  for i, system in ipairs(game.systems) do
-    local textWidget = guilt.newTextWidget()
-    textWidget:setText(system:getSystemType())
-    textWidget:setFont(love.graphics:getFont())
-    textWidget:setColor({255, 255, 255, 255})
+  self.gameWidget = guilt.newUserWidget(self.gui, self.gui.rootWidget, {
+    weight = 1,
+  })
 
-    local borderWidget = guilt.newBorderWidget()
-    borderWidget:setBorders(10)
-    borderWidget:setChild(textWidget)
-    systemListWidget:addChild(borderWidget)
-  end
-
-  self.entityTreeView = EntityTreeView.new(self, game, horizontalWidget, 1, 1)
-  self.gameWidget = guilt.newUserWidget()
-  horizontalWidget:setChild(2, 1, self.gameWidget)
-
-  self.gameWidget.callbacks.draw = function(x, y)
-    love.graphics.push()
-    love.graphics.reset()
-
+  self.gameWidget:setCallback("draw", function(x, y)
     local viewportX, viewportY, viewportWidth, viewportHeight = self.gameWidget:getBounds()
-    love.graphics.setScissor(x + viewportX, y + viewportY, viewportWidth, viewportHeight)
-    self.game:setViewport(x + viewportX, y + viewportY, viewportWidth, viewportHeight)
-    self.game:draw()
-    love.graphics.setScissor()
+    game:setViewport(x + viewportX, y + viewportY, viewportWidth, viewportHeight)
+    game:draw()
+  end)
 
-    love.graphics.pop()
-  end
+  self.entityView = EntityView.new(self, self.gui.rootWidget)
+
+  DefaultController.new(self.gui)
 end
 
 function Editor:destroy()
 end
 
+function Editor:select(obj)
+  self.selection[obj] = true
+end
+
+function Editor:deselect(obj)
+  self.selection[obj] = nil
+end
+
+function Editor:deselectAll()
+  self.selection = {}
+end
+
+function Editor:isSelected(obj)
+  return self.selection[obj] ~= nil
+end
+
+function Editor:getSelection()
+  return self.selection
+end
+
 function Editor:update(dt)
   self.game:update(dt)
 
-  if self.entityView then
-    self.entityView:update(dt)
-  end
+  self.entityTreeView:update(dt)
+  self.entityView:update(dt)
 
   local width, height = love.graphics.getDimensions()
-
-  self.rootWidget:getTargetDimensions()
-  self.rootWidget:setBounds(0, 0, width, height)
+  self.gui.rootWidget:measure()
+  self.gui.rootWidget:arrange(0, 0, width, height)
 end
 
 function Editor:draw()
-  self.rootWidget:draw(0, 0)
-end
-
-function Editor:mousepressed(x, y, button, istouch)
-  self.rootWidget:mousepressed(x, y, button, istouch)
+  self.gui.rootWidget:draw(0, 0)
 end
 
 return Editor
