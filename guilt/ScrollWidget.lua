@@ -107,20 +107,22 @@ function ScrollWidget:measure()
     self.measuredHeight = math.max(self.measuredHeight, height)
   end
 
+  local scale = self.gui:getScale()
+
   if self.minWidth then
-    self.measuredWidth = math.max(self.measuredWidth, self.minWidth)
+    self.measuredWidth = math.max(self.measuredWidth, scale * self.minWidth)
   end
 
   if self.minHeight then
-    self.measuredHeight = math.max(self.measuredHeight, self.minHeight)
+    self.measuredHeight = math.max(self.measuredHeight, scale * self.minHeight)
   end
 
   if self.maxWidth then
-    self.measuredWidth = math.min(self.measuredWidth, self.maxWidth)
+    self.measuredWidth = math.min(self.measuredWidth, scale * self.maxWidth)
   end
 
   if self.maxHeight then
-    self.measuredHeight = math.min(self.measuredHeight, self.maxHeight)
+    self.measuredHeight = math.min(self.measuredHeight, scale * self.maxHeight)
   end
 
   return self.measuredWidth, self.measuredHeight

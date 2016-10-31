@@ -110,8 +110,10 @@ function BorderWidget:measure()
     self.measuredHeight = math.max(self.measuredHeight, height)
   end
 
-  self.measuredWidth = self.measuredWidth + self.leftBorder + self.rightBorder
-  self.measuredHeight = self.measuredHeight + self.topBorder + self.bottomBorder
+  local scale = self.gui:getScale()
+
+  self.measuredWidth = self.measuredWidth + scale * (self.leftBorder + self.rightBorder)
+  self.measuredHeight = self.measuredHeight + scale * (self.topBorder + self.bottomBorder)
 
   return self.measuredWidth, self.measuredHeight
 end
@@ -120,11 +122,13 @@ function BorderWidget:arrange(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
 
-  local childWidth = width - self.leftBorder - self.rightBorder
-  local childHeight = height - self.topBorder - self.bottomBorder
+  local scale = self.gui:getScale()
+
+  local childWidth = width - scale * (self.leftBorder + self.rightBorder)
+  local childHeight = height - scale * (self.topBorder + self.bottomBorder)
 
   for i, child in ipairs(self.children) do
-    child:arrange(self.leftBorder, self.topBorder, childWidth, childHeight)
+    child:arrange(scale * self.leftBorder, scale * self.topBorder, childWidth, childHeight)
   end
 end
 

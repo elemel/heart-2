@@ -13,8 +13,9 @@ end
 
 function EntityView:init(editor, parentWidget)
   self.editor = assert(editor)
+
   self.widget = guilt.newScrollWidget(editor.gui, parentWidget, {
-    minWidth = 400, maxWidth = 400,
+    minWidth = 200, maxWidth = 200,
   })
 
   local listWidget = guilt.newListWidget(editor.gui, self.widget, {
@@ -22,7 +23,7 @@ function EntityView:init(editor, parentWidget)
   })
 
   local borderWidget = guilt.newBorderWidget(editor.gui, listWidget, {
-    border = 12,
+    border = 6,
   })
 
   self.entityNameWidget = guilt.newTextWidget(editor.gui, borderWidget, {

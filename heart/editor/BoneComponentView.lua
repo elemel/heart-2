@@ -1,4 +1,5 @@
 local guilt = require("guilt")
+local utf8 = require("utf8")
 
 local BoneComponentView = {}
 BoneComponentView.__index = BoneComponentView

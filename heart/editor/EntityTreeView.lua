@@ -15,12 +15,20 @@ function EntityTreeView:init(editor, parentWidget)
   self.game = assert(editor.game)
   self.parentWidget = assert(parentWidget)
 
-  self.widget = guilt.newListWidget(self.editor.gui, self.parentWidget, {
+  self.widget = guilt.newScrollWidget(editor.gui, parentWidget, {
+    minWidth = 200, maxWidth = 200,
+  })
+
+  local borderWidget = guilt.newBorderWidget(editor.gui, self.widget, {
+    border = 6,
+  })
+
+  local listWidget = guilt.newListWidget(self.editor.gui, borderWidget, {
     direction = "down",
   })
 
   for i, entity in ipairs(self.game.entities) do
-    local textWidget = guilt.newTextWidget(self.editor.gui, self.widget, {
+    local textWidget = guilt.newTextWidget(self.editor.gui, listWidget, {
       text = entity:getUuid(),
       alignmentX = 0,
     })

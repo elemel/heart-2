@@ -14,10 +14,9 @@ end
 
 function Editor:init(game)
   self.game = assert(game)
+  self.running = false
   self.selection = {}
-  self.font = love.graphics.newFont(24)
   self.gui = guilt.newGui()
-  self.gui:setFont(self.font)
 
   local rootWidget = guilt.newListWidget(self.gui, nil, {
     direction = "right",
@@ -25,8 +24,7 @@ function Editor:init(game)
 
   self.gui:setRootWidget(rootWidget)
 
-  local entityTreeScrollWidget = guilt.newScrollWidget(self.gui, self.gui.rootWidget, {})
-  self.entityTreeView = EntityTreeView.new(self, entityTreeScrollWidget)
+  self.entityTreeView = EntityTreeView.new(self, self.gui.rootWidget)
 
   self.gameWidget = guilt.newUserWidget(self.gui, self.gui.rootWidget, {
     weight = 1,
@@ -44,6 +42,14 @@ function Editor:init(game)
 end
 
 function Editor:destroy()
+end
+
+function Editor:isRunning()
+  return self.running
+end
+
+function Editor:setRunning(running)
+  self.running = running
 end
 
 function Editor:select(obj)
@@ -67,12 +73,15 @@ function Editor:getSelection()
 end
 
 function Editor:update(dt)
-  self.game:update(dt)
+  if self.running then
+    self.game:update(dt)
+  end
 
   self.entityTreeView:update(dt)
   self.entityView:update(dt)
 
   local width, height = love.graphics.getDimensions()
+  self.gui:setScale(love.window.getPixelScale())
   self.gui.rootWidget:measure()
   self.gui.rootWidget:arrange(0, 0, width, height)
 end

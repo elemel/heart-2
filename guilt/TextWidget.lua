@@ -1,3 +1,5 @@
+local utf8 = require("utf8")
+
 local TextWidget = {}
 TextWidget.__index = TextWidget
 
@@ -15,6 +17,7 @@ function TextWidget:init(gui, parent, config)
   self.color = config.color or {255, 255, 255, 255}
   self.backgroundColor = config.backgroundColor or nil
   self.weight = config.weight or 0
+  self.fontSize = config.fontSize or 12
 
   self.alignmentX = config.alignmentX or 0.5
   self.alignmentY = config.alignmentY or 0.5
@@ -24,12 +27,20 @@ function TextWidget:init(gui, parent, config)
   self.measuredWidth, self.measuredHeight = 0, 0
   self.normalizedWeight = 0, 0
 
+  self.selectionOffset = 2
+  self.selectionLength = 1
+
+
   self.callbacks = {}
 end
 
 function TextWidget:destroy()
   self:setParent(nil)
   self.gui = nil
+end
+
+function TextWidget:getGui()
+  return self.gui
 end
 
 function TextWidget:getParent()
@@ -58,12 +69,12 @@ function TextWidget:setText(text)
   self.text = text
 end
 
-function TextWidget:getFont()
-  return self.font
+function TextWidget:getFontSize()
+  return self.fontSize
 end 
 
-function TextWidget:setFont(font)
-  self.font = font
+function TextWidget:setFontSize(size)
+  self.fontSize = size
 end
 
 function TextWidget:getColor()
@@ -103,7 +114,8 @@ function TextWidget:setCallback(name, callback)
 end
 
 function TextWidget:measure()
-  local font = self.font or self.gui:getFont()
+  local scale = self.gui:getScale()
+  local font = self.gui:getFont(scale * self.fontSize)
 
   self.measuredWidth = font:getWidth(self.text)
   self.measuredHeight = font:getHeight()
@@ -123,7 +135,8 @@ function TextWidget:draw(x, y)
   end
 
   if self.text and self.color then
-    local font = self.font or self.gui:getFont()
+    local scale = self.gui:getScale()
+    local font = self.gui:getFont(scale * self.fontSize)
 
     local extraWidth = self.width - self.measuredWidth
     local extraHeight = self.height - self.measuredHeight
@@ -134,6 +147,26 @@ function TextWidget:draw(x, y)
     love.graphics.setColor(self.color)
     love.graphics.setFont(font)
     love.graphics.print(self.text, textX, textY)
+  end
+
+  if self.selectionOffset and self.color then
+    local scale = self.gui:getScale()
+    local font = self.gui:getFont(scale * self.fontSize)
+
+    local prefix = string.sub(self.text, 1, self.selectionOffset - 1)
+    local prefixWidth = font:getWidth(prefix)
+    local selectionHeight = font:getHeight()
+    love.graphics.setColor(self.color)
+
+    if self.selectionLength == 0 then
+      love.graphics.line(x + self.x + prefixWidth, y + self.y,
+        x + self.x + prefixWidth, y + self.y + selectionHeight)
+    else
+      local selection = string.sub(self.text, self.selectionOffset, self.selectionOffset + self.selectionLength - 1)
+      local selectionWidth = font:getWidth(selection)
+      love.graphics.rectangle("line", x + self.x + prefixWidth,
+        y + self.y, selectionWidth, selectionHeight)
+    end
   end
 end
 

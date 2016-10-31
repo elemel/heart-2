@@ -174,6 +174,7 @@ function love.load()
   -- print(jsua.write(game:getConfig()))
 
   editor = heart.editor.newEditor(game)
+  love.keyboard.setKeyRepeat(true)
 end
 
 function love.update(dt)
@@ -184,6 +185,14 @@ function love.draw()
   editor:draw()
 end
 
+function love.keypressed(key, scancode, isrepeat)
+  editor.gui:keypressed(key, scancode, isrepeat)
+end
+
 function love.mousepressed(x, y, button, istouch)
   editor.gui:mousepressed(x, y, button, istouch)
+end
+
+function love.textinput(text)
+  editor.gui:textinput(text)
 end
