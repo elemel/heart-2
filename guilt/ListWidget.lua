@@ -1,22 +1,25 @@
-local ListLayout = require("guilt.ListLayout")
+local ColumnLayout = require("guilt.ColumnLayout")
+local RowLayout = require("guilt.RowLayout")
 
 local ListWidget = {}
 ListWidget.__index = ListWidget
 
 function ListWidget.newRow(gui, parent, config)
+  local layout = RowLayout.new()
   local widget = setmetatable({}, ListWidget)
-  widget:init("row", gui, parent, config)
+  widget:init(layout, gui, parent, config)
   return widget
 end
 
 function ListWidget.newColumn(gui, parent, config)
+  local layout = ColumnLayout.new()
   local widget = setmetatable({}, ListWidget)
-  widget:init("column", gui, parent, config)
+  widget:init(layout, gui, parent, config)
   return widget
 end
 
-function ListWidget:init(type, gui, parent, config)
-  self.layout = ListLayout.new(type)
+function ListWidget:init(layout, gui, parent, config)
+  self.layout = assert(layout)
   self.gui = assert(gui)
   self:setParent(parent)
 
