@@ -23,12 +23,10 @@ function EntityTreeView:init(editor, parentWidget)
     border = 6,
   })
 
-  local listWidget = guilt.newListWidget(self.editor.gui, borderWidget, {
-    direction = "down",
-  })
+  local columnWidget = guilt.newColumnWidget(self.editor.gui, borderWidget, {})
 
   for i, entity in ipairs(self.game.entities) do
-    local textWidget = guilt.newTextWidget(self.editor.gui, listWidget, {
+    local textWidget = guilt.newTextWidget(self.editor.gui, columnWidget, {
       text = entity:getUuid(),
       alignmentX = 0,
     })

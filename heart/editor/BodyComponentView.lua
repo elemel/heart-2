@@ -17,11 +17,9 @@ function BodyComponentView:init(editor, parentWidget)
     border = 12,
   })
 
-  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
-    direction = "down",
-  })
+  local columnWidget = guilt.newColumnWidget(editor.gui, self.widget, {})
 
-  guilt.newTextWidget(editor.gui, listWidget, {
+  guilt.newTextWidget(editor.gui, columnWidget, {
     text = "bodyComponent",
     alignmentX = 0,
   })
@@ -29,7 +27,7 @@ function BodyComponentView:init(editor, parentWidget)
   self.propertyWidgets = {}
 
   for i, name in ipairs({"x", "y", "angle", "velocityX", "velocityY", "angularVelocity"}) do
-    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, listWidget, {
+    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, columnWidget, {
       alignmentX = 0,
     })
   end

@@ -18,9 +18,7 @@ function Editor:init(game)
   self.selection = {}
   self.gui = guilt.newGui()
 
-  local rootWidget = guilt.newListWidget(self.gui, nil, {
-    direction = "right",
-  })
+  local rootWidget = guilt.newRowWidget(self.gui, nil, {})
 
   self.gui:setRootWidget(rootWidget)
 

@@ -17,11 +17,9 @@ function BoneComponentView:init(editor, parentWidget)
     border = 12,
   })
 
-  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
-    direction = "down",
-  })
+  local columnWidget = guilt.newColumnWidget(editor.gui, self.widget, {})
 
-  guilt.newTextWidget(editor.gui, listWidget, {
+  guilt.newTextWidget(editor.gui, columnWidget, {
     text = "boneComponent",
     alignmentX = 0,
   })
@@ -29,7 +27,7 @@ function BoneComponentView:init(editor, parentWidget)
   self.propertyWidgets = {}
 
   for i, name in ipairs({"x", "y", "angle"}) do
-    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, listWidget, {
+    self.propertyWidgets[name] = guilt.newTextWidget(editor.gui, columnWidget, {
       alignmentX = 0,
     })
   end

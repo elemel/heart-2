@@ -7,8 +7,9 @@ local UserWidget = require("guilt.UserWidget")
 
 return {
   newBorderWidget = BorderWidget.new,
+  newColumnWidget = ListWidget.newColumn,
   newGui = Gui.new,
-  newListWidget = ListWidget.new,
+  newRowWidget = ListWidget.newRow,
   newScrollWidget = ScrollWidget.new,
   newTextWidget = TextWidget.new,
   newUserWidget = UserWidget.new,

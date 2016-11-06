@@ -1,17 +1,23 @@
 local ListWidget = {}
 ListWidget.__index = ListWidget
 
-function ListWidget.new(gui, parent, config)
+function ListWidget.newRow(gui, parent, config)
   local widget = setmetatable({}, ListWidget)
-  widget:init(gui, parent, config)
+  widget:init("row", gui, parent, config)
   return widget
 end
 
-function ListWidget:init(gui, parent, config)
+function ListWidget.newColumn(gui, parent, config)
+  local widget = setmetatable({}, ListWidget)
+  widget:init("column", gui, parent, config)
+  return widget
+end
+
+function ListWidget:init(type, gui, parent, config)
+  self.type = assert(type)
   self.gui = assert(gui)
   self:setParent(parent)
 
-  self.direction = assert(config.direction)
   self.weight = config.weight or 0
 
   self.x, self.y = 0, 0
@@ -30,6 +36,10 @@ function ListWidget:destroy()
   end
 
   self:setParent(nil)
+end
+
+function ListWidget:getType()
+  return self.type
 end
 
 function ListWidget:getParent()
@@ -91,10 +101,10 @@ function ListWidget:measure()
   for i, child in ipairs(self.children) do
     local width, height = child:measure()
 
-    if self.direction == "down" then
+    if self.type == "column" then
       self.measuredWidth = math.max(self.measuredWidth, width)
       self.measuredHeight = self.measuredHeight + height
-    elseif self.direction == "right" then
+    elseif self.type == "row" then
       self.measuredWidth = self.measuredWidth + width
       self.measuredHeight = math.max(self.measuredHeight, height)
     else
@@ -110,7 +120,7 @@ function ListWidget:arrange(x, y, width, height)
   self.width, self.height = width, height
   self:normalizeChildWeights()
 
-  if self.direction == "down" then
+  if self.type == "column" then
     local extraHeight = height - self.measuredHeight
     local childY = 0
 
@@ -119,7 +129,7 @@ function ListWidget:arrange(x, y, width, height)
       child:arrange(0, childY, width, childHeight)
       childY = childY + childHeight
     end
-  elseif self.direction == "right" then
+  elseif self.type == "row" then
     local extraWidth = width - self.measuredWidth
     local childX = 0
 

@@ -18,11 +18,9 @@ function EntityView:init(editor, parentWidget)
     minWidth = 200, maxWidth = 200,
   })
 
-  local listWidget = guilt.newListWidget(editor.gui, self.widget, {
-    direction = "down",
-  })
+  local columnWidget = guilt.newColumnWidget(editor.gui, self.widget, {})
 
-  local borderWidget = guilt.newBorderWidget(editor.gui, listWidget, {
+  local borderWidget = guilt.newBorderWidget(editor.gui, columnWidget, {
     border = 6,
   })
 
@@ -30,8 +28,8 @@ function EntityView:init(editor, parentWidget)
     alignmentX = 0,
   })
 
-  self.boneComponentView = BoneComponentView.new(editor, listWidget)
-  self.bodyComponentView = BodyComponentView.new(editor, listWidget)
+  self.boneComponentView = BoneComponentView.new(editor, columnWidget)
+  self.bodyComponentView = BodyComponentView.new(editor, columnWidget)
 end
 
 function EntityView:destroy()
