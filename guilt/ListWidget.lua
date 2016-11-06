@@ -1,3 +1,5 @@
+local ListLayout = require("guilt.ListLayout")
+
 local ListWidget = {}
 ListWidget.__index = ListWidget
 
@@ -14,7 +16,7 @@ function ListWidget.newColumn(gui, parent, config)
 end
 
 function ListWidget:init(type, gui, parent, config)
-  self.type = assert(type)
+  self.layout = ListLayout.new(type)
   self.gui = assert(gui)
   self:setParent(parent)
 
@@ -36,10 +38,6 @@ function ListWidget:destroy()
   end
 
   self:setParent(nil)
-end
-
-function ListWidget:getType()
-  return self.type
 end
 
 function ListWidget:getParent()
@@ -96,22 +94,7 @@ function ListWidget:setCallback(name, callback)
 end
 
 function ListWidget:measure()
-  self.measuredWidth, self.measuredHeight = 0, 0
-
-  for i, child in ipairs(self.children) do
-    local width, height = child:measure()
-
-    if self.type == "column" then
-      self.measuredWidth = math.max(self.measuredWidth, width)
-      self.measuredHeight = self.measuredHeight + height
-    elseif self.type == "row" then
-      self.measuredWidth = self.measuredWidth + width
-      self.measuredHeight = math.max(self.measuredHeight, height)
-    else
-      assert(false)
-    end
-  end
-
+  self.measuredWidth, self.measuredHeight = self.layout:measure(self)
   return self.measuredWidth, self.measuredHeight
 end
 
@@ -119,28 +102,7 @@ function ListWidget:arrange(x, y, width, height)
   self.x, self.y = x, y
   self.width, self.height = width, height
   self:normalizeChildWeights()
-
-  if self.type == "column" then
-    local extraHeight = height - self.measuredHeight
-    local childY = 0
-
-    for i, child in ipairs(self.children) do
-      local childHeight = child.measuredHeight + extraHeight * child.normalizedWeight
-      child:arrange(0, childY, width, childHeight)
-      childY = childY + childHeight
-    end
-  elseif self.type == "row" then
-    local extraWidth = width - self.measuredWidth
-    local childX = 0
-
-    for i, child in ipairs(self.children) do
-      local childWidth = child.measuredWidth + extraWidth * child.normalizedWeight
-      child:arrange(childX, 0, childWidth, height)
-      childX = childX + childWidth
-    end
-  else
-    assert(false)
-  end
+  self.layout:arrange(self)
 end
 
 function ListWidget:draw(x, y)
